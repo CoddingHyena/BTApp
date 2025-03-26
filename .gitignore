@@ -1,0 +1,27 @@
+# IDE и редакторы
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Логи
+logs/
+*.log
+
+# Временные файлы ОС
+.DS_Store
+Thumbs.db
+
+# Общие папки для зависимостей и сборки
+node_modules/
+dist/
+build/
+
+# Файлы окружения
+.env
+.env.local
+.env.*.local
+
+# Другие общие файлы
+*.tmp
+*.bak
