@@ -36,3 +36,45 @@ model Mech {
 
   @@map("mechs")
 }
+
+model Period {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  code           String   @unique
+  startYear      Int
+  endYear        Int?     // Может быть null для текущих периодов
+  sortOrder      Int      @unique // Уникальный порядок сортировки
+  description    String?  @db.Text
+  imageUrl       String?  // Путь к изображению периода
+  bannerUrl      String?  // Путь к баннеру периода
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Связь с таблицей доступности мехов (будет добавлена позже)
+  // mechAvailability MechAvailability[]
+
+  @@map("periods")
+}
+
+model Faction {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  code           String   @unique
+  primaryColor   String?  // HEX код основного цвета
+  secondaryColor String?  // HEX код вторичного цвета
+  formationYear  Int?     // Год формирования фракции
+  dissolutionYear Int?    // Год роспуска фракции (null если существует)
+  description    String?  @db.Text
+  logoUrl        String?  // Путь к логотипу/гербу
+  bannerUrl      String?  // Путь к баннеру фракции
+  isMajor        Boolean  @default(false) // Флаг для основных фракций
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Связь с таблицей доступности мехов (будет добавлена позже)
+  // mechAvailability MechAvailability[]
+
+  @@map("factions")
+}
