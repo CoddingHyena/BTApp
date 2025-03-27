@@ -1,0 +1,9 @@
+
+
+
+Back:  npm run start:dev
+Front:  npm run start:dev
+
+Prisma: npx prisma db seed
+Period seed: ts-node prisma/seeds/period.seeds.ts
+Faction seed: ts-node prisma/seeds/faction.seeds.ts
