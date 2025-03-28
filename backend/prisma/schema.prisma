@@ -59,6 +59,9 @@ model Mech {
   cost        Float?   // Cost
   rating      String?  // Rating
   designer    String?  // Designer
+  alphaCard   String?  // Ссылка на изображение Alpha Strike карточки
+  recSheet    String?  // Ссылка на изображение Record Sheet
+  vid         String?  // Ссылка на видео/изображение меха в действии
   
   // Связь с исходными данными
   rawMechId   String?
