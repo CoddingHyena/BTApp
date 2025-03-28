@@ -1,5 +1,5 @@
 // src/modules/import/interfaces/mech-csv.interface.ts
-export interface MechCsvRecord {
+export interface RawMechCsvRecord {
     DBID: string;
     'Name/Model': string;
     'Unit Type': string;

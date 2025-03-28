@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CsvDownloadModule } from './modules/csv_download/csv-download.module';
 import { PeriodModule } from './modules/period/periods.module';  
 import { FactionModule } from './modules/factions/faction.module';
+import { MechAvailabilityModule } from './modules/mech-availability/mech-availability.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FactionModule } from './modules/factions/faction.module';
     CsvDownloadModule,
     PeriodModule,
     FactionModule,
+    MechAvailabilityModule,
   ],
 })
 export class AppModule {}
