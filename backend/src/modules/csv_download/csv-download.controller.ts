@@ -407,7 +407,7 @@ export class CsvDownloadController {
       },
     }),
   )
-  async importMechsFromCsv(
+  async importRawMechsFromCsv(
     @UploadedFile() file: Express.Multer.File,
     @Body('skipDuplicates') skipDuplicates: boolean = false,
     @Body('updateExisting') updateExisting: boolean = false,

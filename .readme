@@ -1,9 +1,13 @@
 
-
-
 Back:  npm run start:dev
-Front:  npm run start:dev
+Front:  npm run dev
 
+"db:restart": npm run db:reset && npm run db:generate && npm run db:seed
 Prisma: npx prisma db seed
 Period seed: ts-node prisma/seeds/period.seeds.ts
 Faction seed: ts-node prisma/seeds/faction.seeds.ts
+Availability seed: ts-node prisma/seeds/mech-availability.seeds.ts
+
+App: cd app
+Back: cd app/backend
+Front: cd app/frontend

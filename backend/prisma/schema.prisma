@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +10,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model RawMech {
+  id          String   @id @default(uuid())
+  dbId        Int      @unique // DBID из CSV
+  name        String   // Name/Model
+  unitType    String   // Unit Type
+  technology  String   // Technology
+  chassis     String   // Chassis
+  era         String   // Era
+  year        Int      // Year
+  rulesLevel  String   // Rules Level (Era)
+  tonnage     Float    // Tonnage
+  battleValue Int      // Battle Value
+  pointValue  Int      // Point Value
+  cost        Float?   // Cost
+  rating      String?  // Rating
+  designer    String?  // Designer
+  
+  // Новое поле для отслеживания статуса валидации
+  validated   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
+  // Связь с проверенными мехами
+  mechs       Mech[]
+
+  // Временная связь с доступностями (будет удалена)
+  availabilities MechAvailability[]
+
+  @@map("raw_mechs")
+}
+
+// Новая модель для проверенных мехов
 model Mech {
   id          String   @id @default(uuid())
   dbId        Int      @unique // DBID из CSV
@@ -31,8 +60,15 @@ model Mech {
   rating      String?  // Rating
   designer    String?  // Designer
   
+  // Связь с исходными данными
+  rawMechId   String?
+  rawMech     RawMech? @relation(fields: [rawMechId], references: [id])
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Связь с доступностями
+  availabilities MechAvailability[]
 
   @@map("mechs")
 }
@@ -51,8 +87,8 @@ model Period {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  // Связь с таблицей доступности мехов (будет добавлена позже)
-  // mechAvailability MechAvailability[]
+  // Связь с доступностями
+  mechAvailabilities MechAvailability[]
 
   @@map("periods")
 }
@@ -73,8 +109,36 @@ model Faction {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  // Связь с таблицей доступности мехов (будет добавлена позже)
-  // mechAvailability MechAvailability[]
+  // Связь с доступностями
+  mechAvailabilities MechAvailability[]
 
   @@map("factions")
+}
+
+model MechAvailability {
+  id                String    @id @default(uuid())
+  
+  // Изменение связи с RawMech на Mech
+  mechId            String    // Ссылка на Mech
+  mech              Mech      @relation(fields: [mechId], references: [id], onDelete: Cascade)
+  
+  // Временная связь со старой моделью (для миграции данных)
+  rawMechId         String?
+  rawMech           RawMech?  @relation(fields: [rawMechId], references: [id])
+  
+  factionId         Int       // Ссылка на Faction
+  periodId          Int       // Ссылка на Period
+  availabilityLevel String    // Уровень доступности
+  introducedYear    Int?      // Год введения меха
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Отношения с другими моделями
+  faction           Faction   @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  period            Period    @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  // Уникальный индекс для предотвращения дублирования
+  @@unique([mechId, factionId, periodId])
+  @@map("mech_availabilities")
 }

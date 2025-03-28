@@ -24,6 +24,7 @@
 import { PrismaClient } from '@prisma/client';
 import { seedPeriods } from './seeds/period.seeds';
 import { seedFactions } from './seeds/faction.seeds';
+import { seedMechAvailability } from './seeds/mech-availability.seeds';
 
 const prisma = new PrismaClient();
 
@@ -35,6 +36,15 @@ async function main() {
     
     await seedFactions(prisma);
     console.log('Factions seeding completed');
+
+        // Запускаем seed для mech_availability только если есть данные мехов
+        const mechCount = await prisma.rawMech.count();
+        if (mechCount > 0) {
+          await seedMechAvailability(prisma);
+          console.log('Mech availability seeding completed');
+        } else {
+          console.log('Skipping mech availability seeding: no mechs found');
+        }
     
     console.log('All seeding completed successfully');
   } catch (error) {

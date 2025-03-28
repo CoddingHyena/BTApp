@@ -1,7 +1,7 @@
 // src/modules/csv_download/utils/csv-parser.util.ts
 import * as fs from 'fs';
 import * as csvParser from 'csv-parser';
-import { MechCsvRecord } from '../interfaces/mech-csv-record.interface';
+import { RawMechCsvRecord } from '../interfaces/raw-mech-csv-record.interface';
 
 /**
  * Утилиты для работы с CSV-файлами мехов
@@ -20,9 +20,9 @@ export class CsvParserUtil {
       delimiter?: string;
       encoding?: BufferEncoding;
     } = {}
-  ): Promise<MechCsvRecord[]> {
+  ): Promise<RawMechCsvRecord[]> {
     return new Promise((resolve, reject) => {
-      const results: MechCsvRecord[] = [];
+      const results: RawMechCsvRecord[] = [];
       
       // Настройки по умолчанию
       const delimiter = options.delimiter || ',';
@@ -30,7 +30,7 @@ export class CsvParserUtil {
       
       fs.createReadStream(filePath, { encoding })
         .pipe(csvParser({ separator: delimiter }))
-        .on('data', (data: MechCsvRecord) => results.push(data))
+        .on('data', (data: RawMechCsvRecord) => results.push(data))
         .on('error', (error) => reject(error))
         .on('end', () => resolve(results));
     });
