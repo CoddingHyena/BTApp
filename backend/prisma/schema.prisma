@@ -36,9 +36,6 @@ model RawMech {
   // Связь с проверенными мехами
   mechs       Mech[]
 
-  // Временная связь с доступностями (будет удалена)
-  availabilities MechAvailability[]
-
   @@map("raw_mechs")
 }
 
@@ -125,10 +122,7 @@ model MechAvailability {
   mechId            String    // Ссылка на Mech
   mech              Mech      @relation(fields: [mechId], references: [id], onDelete: Cascade)
   
-  // Временная связь со старой моделью (для миграции данных)
-  rawMechId         String?
-  rawMech           RawMech?  @relation(fields: [rawMechId], references: [id])
-  
+
   factionId         Int       // Ссылка на Faction
   periodId          Int       // Ссылка на Period
   availabilityLevel String    // Уровень доступности
