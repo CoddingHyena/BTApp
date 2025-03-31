@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Mech, RawMech } from '../../types/mech';
+// import { Mech, RawMech } from '../../types/mech';
+import { Mech, RawMech, ImportResult } from '../../types/mech';
 import { Faction } from '../../types/faction';
 import { Period } from '../../types/period';
 import { MechAvailability } from '../../types/availability';
@@ -87,14 +88,22 @@ export const apiSlice = createApi({
     }),
 
     // CSV import/export endpoints
-    importCsv: builder.mutation<{ mechs: RawMech[] }, FormData>({
-      query: (formData) => ({
-        url: '/import/mechs/csv',
-        method: 'POST',
-        body: formData,
+    // importCsv: builder.mutation<{ mechs: RawMech[] }, FormData>({
+    //   query: (formData) => ({
+    //     url: '/import/mechs/csv',
+    //     method: 'POST',
+    //     body: formData,
+    //   }),
+    //   invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
+    // }),
+    importCsv: builder.mutation<ImportResult | { mechs: RawMech[] }, FormData>({
+        query: (formData) => ({
+          url: '/import/mechs/csv', // путь соответствует вашему бэкенд контроллеру
+          method: 'POST',
+          body: formData,
+        }),
+        invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
       }),
-      invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
-    }),
     exportCsv: builder.query<Blob, void>({
       query: () => ({
         url: '/csv/export',
