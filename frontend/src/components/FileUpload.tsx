@@ -1,226 +1,119 @@
-// // src/components/FileUpload.tsx
-// import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { Button, Form, Alert, Spinner } from 'react-bootstrap';
+import { useImportCsvMutation } from '../store/api/apiSlice';
+import { setMechs } from '../store/slices/mechSlice';
+import { useAppDispatch } from '../hooks/reduxHooks';
 
 // interface FileUploadProps {
-//   onFileSelect: (file: File) => void;
-//   accept?: string;
-//   label?: string;
+//   onSuccess?: () => void;
 // }
 
-// const FileUpload: React.FC<FileUploadProps> = ({
-//   onFileSelect,
-//   accept = '.csv',
-//   label = 'Выберите файл или перетащите его сюда'
-// }) => {
-//   const [isDragging, setIsDragging] = useState(false);
-//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-//   const fileInputRef = useRef<HTMLInputElement>(null);
-
-//   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     setIsDragging(true);
-//   };
-
-//   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     setIsDragging(false);
-//   };
-
-//   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     if (!isDragging) {
-//       setIsDragging(true);
-//     }
-//   };
-
-//   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     setIsDragging(false);
-    
-//     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-//       const file = e.dataTransfer.files[0];
-//       setSelectedFile(file);
-//       onFileSelect(file);
-//     }
-//   };
-
-//   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     if (e.target.files && e.target.files.length > 0) {
-//       const file = e.target.files[0];
-//       setSelectedFile(file);
-//       onFileSelect(file);
-//     }
-//   };
-
-//   const handleButtonClick = () => {
-//     if (fileInputRef.current) {
-//       fileInputRef.current.click();
-//     }
-//   };
-
-//   return (
-//     <div
-//       className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
-//         isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-//       }`}
-//       onDragEnter={handleDragEnter}
-//       onDragLeave={handleDragLeave}
-//       onDragOver={handleDragOver}
-//       onDrop={handleDrop}
-//       onClick={handleButtonClick}
-//     >
-//       <input
-//         ref={fileInputRef}
-//         type="file"
-//         className="hidden"
-//         onChange={handleFileChange}
-//         accept={accept}
-//       />
-      
-//       <div className="mb-4">
-//         <svg
-//           className="mx-auto h-12 w-12 text-gray-400"
-//           fill="none"
-//           viewBox="0 0 24 24"
-//           stroke="currentColor"
-//           aria-hidden="true"
-//         >
-//           <path
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             strokeWidth={2}
-//             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-//           />
-//         </svg>
-//       </div>
-      
-//       <p className="text-sm text-gray-600">{label}</p>
-      
-//       {selectedFile && (
-//         <div className="mt-3">
-//           <span className="text-sm font-medium text-blue-600">{selectedFile.name}</span>
-//           <span className="ml-2 text-xs text-gray-500">
-//             ({(selectedFile.size / 1024).toFixed(2)} KB)
-//           </span>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default FileUpload;
-
-// src/components/FileUpload.tsx
-import React, { useState, useRef } from 'react';
-import { Form, Card } from 'react-bootstrap';
-
 interface FileUploadProps {
-  onFileSelect: (file: File) => void;
+  onSuccess?: () => void;
+  onFileSelect?: (selectedFile: File) => void;
   accept?: string;
   label?: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({
-  onFileSelect,
-  accept = '.csv',
-  label = 'Выберите файл или перетащите его сюда'
-}) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const FileUpload: React.FC<FileUploadProps> = ({ onSuccess }) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!isDragging) {
-      setIsDragging(true);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      setSelectedFile(file);
-      onFileSelect(file);
-    }
-  };
+  const dispatch = useAppDispatch();
+  
+  // RTK Query mutation hook
+  const [importCsv, { isLoading }] = useImportCsvMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      onFileSelect(file);
-    }
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+    setErrorMessage(null);
   };
 
-  const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!file) {
+      setErrorMessage('Please select a file first');
+      return;
+    }
+
+    if (!file.name.endsWith('.csv')) {
+      setErrorMessage('Only CSV files are supported');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const result = await importCsv(formData).unwrap();
+      
+      // Update Redux store with imported mechs
+      if (result.mechs) {
+        dispatch(setMechs(result.mechs));
+      }
+      
+      // Reset form
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error('Failed to import CSV:', error);
+      setErrorMessage(
+        error instanceof Error 
+          ? `Error: ${error.message}` 
+          : 'Failed to import file. Please check the file format and try again.'
+      );
     }
   };
 
   return (
-    <div className="d-flex justify-content-center"> {/* Центрируем компонент */}
-      <Card 
-        className={`text-center ${isDragging ? 'border-primary bg-light' : ''}`}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        onClick={handleButtonClick}
-        style={{ 
-          cursor: 'pointer',
-          width: '50%', // Уменьшаем ширину до 50%
-          maxWidth: '500px', // Максимальная ширина для контроля на больших экранах
-          height: 'auto' // Высота будет пропорциональна содержимому
-        }}
+    <Form onSubmit={handleSubmit}>
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+      
+      <Form.Group controlId="formFile" className="mb-3">
+        <Form.Label>Select BattleMech CSV file</Form.Label>
+        <Form.Control
+          type="file"
+          accept=".csv"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          disabled={isLoading}
+        />
+        <Form.Text className="text-muted">
+          Upload a CSV file containing BattleMech data in the correct format.
+        </Form.Text>
+      </Form.Group>
+      
+      <Button 
+        variant="primary" 
+        type="submit" 
+        disabled={!file || isLoading}
       >
-        <Card.Body className="py-3"> {/* Уменьшаем вертикальные отступы */}
-          <Form.Control
-            ref={fileInputRef}
-            type="file"
-            className="d-none"
-            onChange={handleFileChange}
-            accept={accept}
-          />
-          
-          <div className="mb-2"> {/* Уменьшаем отступ снизу */}
-            <i className="bi bi-cloud-upload fs-4 text-secondary"></i> {/* Уменьшаем размер иконки */}
-          </div>
-          
-          <p className="text-muted small mb-1">{label}</p> {/* Уменьшаем размер текста и отступ снизу */}
-          
-          {selectedFile && (
-            <div className="mt-2"> {/* Уменьшаем отступ сверху */}
-              <span className="text-primary fw-bold small">{selectedFile.name}</span>
-              <span className="ms-2 text-muted small">
-                ({(selectedFile.size / 1024).toFixed(2)} KB)
-              </span>
-            </div>
-          )}
-        </Card.Body>
-      </Card>
-    </div>
+        {isLoading ? (
+          <>
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+              className="me-2"
+            />
+            Importing...
+          </>
+        ) : (
+          'Import CSV'
+        )}
+      </Button>
+    </Form>
   );
 };
 
