@@ -347,7 +347,7 @@ import * as fs from 'fs';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('csv-download')
-@Controller('api/import/mechs/csv')
+@Controller('import/mechs/csv')
 export class CsvDownloadController {
   private readonly logger = new Logger(CsvDownloadController.name);
   private readonly uploadDir = path.join(process.cwd(), 'uploads');
