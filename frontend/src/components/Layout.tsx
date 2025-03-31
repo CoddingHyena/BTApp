@@ -105,6 +105,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Nav className="ms-auto">
               <Nav.Link as={Link} to="/">Главная</Nav.Link>
               <Nav.Link as={Link} to="/import">Импорт данных</Nav.Link>
+              <Nav.Link as={Link} to="/mechs">Список мехов</Nav.Link>
+              <Nav.Link as={Link} to="/factions">Список фракций</Nav.Link>
+              <Nav.Link as={Link} to="/periods">Список периодов</Nav.Link>
+              <Nav.Link as={Link} to="/availability">Таблица доступности</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
