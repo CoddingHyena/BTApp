@@ -139,3 +139,37 @@ model MechAvailability {
   @@unique([mechId, factionId, periodId])
   @@map("mech_availabilities")
 }
+
+model Mission {
+  id             String    @id @default(uuid())
+  code           String    @unique // Формат "BT-XXX" для быстрого поиска
+  title          String
+  description    String?   @db.Text // Общее описание миссии
+  objectives     String[]  // Основные задачи: ["1. Захват точки", "2. Удержание 5 ходов"]
+  type           MissionType
+  difficulty     MissionDifficulty
+  deploymentUrl  String?   // Схема расстановки (URL изображения)
+  
+  // Warchest система 
+  cost           Int?      @default(0) // Стоимость в Warchest Points
+  reward         Json?     // { points: Int, bonuses: String[] }
+  
+  // Метаданные
+  source         String?   // Источник, например "Total Warfare, p.102"
+  isOfficial     Boolean   @default(true) // false = пользовательская
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("missions")
+}
+
+enum MissionType {
+  CLASSIC
+  ALPHA_STRIKE
+}
+
+enum MissionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}

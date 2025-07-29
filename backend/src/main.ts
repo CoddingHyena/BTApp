@@ -19,15 +19,32 @@ async function bootstrap() {
   const periodsBannersDir = join(uploadsDir, 'periods', 'banners');
   const factionsImagesDir = join(uploadsDir, 'factions');
   const factionsBannersDir = join(uploadsDir, 'factions', 'logos');
+  const missionsImagesDir = join(uploadsDir, 'missions');
   
-   [uploadsDir, periodsImagesDir, periodsBannersDir, factionsImagesDir, factionsBannersDir].forEach(dir => {
+   [uploadsDir, periodsImagesDir, periodsBannersDir, factionsImagesDir, factionsBannersDir, missionsImagesDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
   });
   
   // Настройка статических файлов - добавляем возможность доступа к публичным файлам
-  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.useStaticAssets(join(process.cwd(), 'public'), {
+    prefix: '/uploads/',
+  });
+  
+  // Дополнительная настройка для прямого доступа к файлам
+  app.use('/uploads', (req, res, next) => {
+    // Ищем файл в папке public/uploads (правильный путь)
+    const filePath = join(process.cwd(), 'public', 'uploads', req.url);
+    console.log(`Static file request: ${req.url} -> ${filePath}`);
+    console.log(`File exists: ${fs.existsSync(filePath)}`);
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      console.log(`File not found: ${filePath}`);
+      next();
+    }
+  });
   
   // Настройка Swagger
   const config = new DocumentBuilder()

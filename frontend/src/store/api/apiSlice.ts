@@ -4,12 +4,14 @@ import { Mech, RawMech, ImportResult } from '../../types/mech';
 import { Faction } from '../../types/faction';
 import { Period } from '../../types/period';
 import { MechAvailability } from '../../types/availability';
+import { Mission, CreateMissionDto, UpdateMissionDto } from '../../types/mission';
+import { API_BASE_URL } from '../../config/api';
 
 // Define a service using a base URL and expected endpoints
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000' }),
-  tagTypes: ['Mech', 'Faction', 'Period', 'MechAvailability'],
+  baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
+  tagTypes: ['Mech', 'Faction', 'Period', 'MechAvailability', 'Mission'],
   endpoints: (builder) => ({
     // Mech endpoints
     getMechs: builder.query<Mech[], void>({
@@ -110,6 +112,62 @@ export const apiSlice = createApi({
         responseHandler: (response) => response.blob(),
       }),
     }),
+
+    // Mission endpoints
+    getMissions: builder.query<Mission[], void>({
+      query: () => '/missions',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Mission' as const, id })),
+              { type: 'Mission', id: 'LIST' },
+            ]
+          : [{ type: 'Mission', id: 'LIST' }],
+    }),
+    getMissionById: builder.query<Mission, string>({
+      query: (id) => `/missions/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Mission', id }],
+    }),
+    getMissionByCode: builder.query<Mission, string>({
+      query: (code) => `/missions/code/${code}`,
+      providesTags: (result, error, code) => [{ type: 'Mission', id: code }],
+    }),
+    getActiveMissions: builder.query<Mission[], void>({
+      query: () => '/missions/active',
+      providesTags: [{ type: 'Mission', id: 'ACTIVE' }],
+    }),
+    createMission: builder.mutation<Mission, CreateMissionDto>({
+      query: (mission) => ({
+        url: '/missions',
+        method: 'POST',
+        body: mission,
+      }),
+      invalidatesTags: [{ type: 'Mission', id: 'LIST' }],
+    }),
+    updateMission: builder.mutation<Mission, UpdateMissionDto & { id: string }>({
+      query: ({ id, ...mission }) => ({
+        url: `/missions/${id}`,
+        method: 'PATCH',
+        body: mission,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Mission', id }],
+    }),
+    deleteMission: builder.mutation<Mission, string>({
+      query: (id) => ({
+        url: `/missions/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Mission', id: 'LIST' }],
+    }),
+
+    // Mission image upload endpoint
+    uploadMissionImage: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/missions/upload/deployment-image',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
   }),
 });
 
@@ -126,4 +184,12 @@ export const {
   useGetMechAvailabilitiesQuery,
   useImportCsvMutation,
   useExportCsvQuery,
+  useGetMissionsQuery,
+  useGetMissionByIdQuery,
+  useGetMissionByCodeQuery,
+  useGetActiveMissionsQuery,
+  useCreateMissionMutation,
+  useUpdateMissionMutation,
+  useDeleteMissionMutation,
+  useUploadMissionImageMutation,
 } = apiSlice;
