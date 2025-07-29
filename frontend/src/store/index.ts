@@ -5,6 +5,7 @@ import mechReducer from './slices/mechSlice';
 import factionReducer from './slices/factionSlice';
 import periodReducer from './slices/periodSlice';
 import availabilityReducer from './slices/availabilitySlice';
+import missionReducer from './slices/missionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     factions: factionReducer,
     periods: periodReducer,
     availabilities: availabilityReducer,
+    missions: missionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),

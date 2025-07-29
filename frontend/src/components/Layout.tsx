@@ -109,6 +109,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Nav.Link as={Link} to="/factions">Список фракций</Nav.Link>
               <Nav.Link as={Link} to="/periods">Список периодов</Nav.Link>
               <Nav.Link as={Link} to="/availability">Таблица доступности</Nav.Link>
+              <Nav.Link as={Link} to="/missions">Миссии</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
