@@ -6,10 +6,12 @@ import factionReducer from './slices/factionSlice';
 import periodReducer from './slices/periodSlice';
 import availabilityReducer from './slices/availabilitySlice';
 import missionReducer from './slices/missionSlice';
+import authReducer from './slices/authSlice';
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    auth: authReducer,
     mechs: mechReducer,
     factions: factionReducer,
     periods: periodReducer,

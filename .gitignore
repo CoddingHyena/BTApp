@@ -26,3 +26,51 @@ build/
 *.tmp
 *.bak
 *.readme
+
+# Микросервисная архитектура - специфичные исключения
+# Auth Service
+auth-service/dist/
+auth-service/node_modules/
+auth-service/.env
+auth-service/generated/
+auth-service/test-auth.js
+auth-service/test-api.http
+
+# Backend Service
+backend/dist/
+backend/node_modules/
+backend/.env
+backend/uploads/
+backend/public/uploads/
+
+# Frontend Service
+frontend/dist/
+frontend/node_modules/
+frontend/.env
+frontend/build/
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Тестовые файлы
+test-*.js
+test-*.http
+*.test.js
+*.spec.js
+
+# Coverage
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Package managers
+yarn.lock
+package-lock.json
