@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { MissionService } from './mission.service';
 import { CreateMissionDto } from './dto/create-mission.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
 import { Mission, MissionDifficulty } from '@prisma/client';
+import { AuthGuard } from '../../auth/auth.guard';
+import { RolesGuard } from '../../auth/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @Controller('missions')
 export class MissionController {
@@ -31,11 +34,15 @@ export class MissionController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN', 'MODERATOR')
   async create(@Body() createMissionDto: CreateMissionDto): Promise<Mission> {
     return this.missionService.create(createMissionDto);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN', 'MODERATOR')
   async update(
     @Param('id') id: string,
     @Body() updateMissionDto: UpdateMissionDto,
@@ -44,6 +51,8 @@ export class MissionController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   async remove(@Param('id') id: string): Promise<Mission> {
     return this.missionService.remove(id);
   }

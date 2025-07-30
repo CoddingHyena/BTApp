@@ -173,3 +173,58 @@ enum MissionDifficulty {
   MEDIUM
   HARD
 }
+
+// Enum для ролей пользователей
+enum UserRole {
+  PLAYER
+  MODERATOR
+  ADMIN
+}
+
+// Модель пользователя
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String   @unique
+  password  String   // Хешированный пароль
+  role      UserRole @default(PLAYER)
+  
+  // Метаданные
+  firstName String?
+  lastName  String?
+  avatar    String?  // URL аватара
+  
+  // Статус аккаунта
+  isActive  Boolean  @default(true)
+  isVerified Boolean @default(false)
+  
+  // Временные метки
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLoginAt DateTime?
+  
+  // Refresh токены (для JWT)
+  refreshTokens RefreshToken[]
+  
+  @@map("users")
+}
+
+// Модель для refresh токенов
+model RefreshToken {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Метаданные токена
+  expiresAt   DateTime
+  isRevoked   Boolean  @default(false)
+  
+  // IP и User Agent для безопасности
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@map("refresh_tokens")
+}

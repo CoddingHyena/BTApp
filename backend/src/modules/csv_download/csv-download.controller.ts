@@ -338,6 +338,7 @@ import {
   Logger,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -345,6 +346,9 @@ import { CsvDownloadService, ImportResult, CsvDownloadRequestDto } from './csv-d
 import * as path from 'path';
 import * as fs from 'fs';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { AuthGuard } from '../../auth/auth.guard';
+import { RolesGuard } from '../../auth/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags('csv-download')
 @Controller('import/mechs/csv')
@@ -360,6 +364,8 @@ export class CsvDownloadController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Import mechs from CSV file' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

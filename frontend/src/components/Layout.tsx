@@ -88,12 +88,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import UserNav from './UserNav';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
   return (
     <div className="d-flex flex-column min-vh-100 w-100">
       {/* Навигационная панель */}
@@ -102,14 +107,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Navbar.Brand as={Link} to="/">BTapp</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
+            <Nav className="me-auto">
               <Nav.Link as={Link} to="/">Главная</Nav.Link>
-              <Nav.Link as={Link} to="/import">Импорт данных</Nav.Link>
               <Nav.Link as={Link} to="/mechs">Список мехов</Nav.Link>
               <Nav.Link as={Link} to="/factions">Список фракций</Nav.Link>
               <Nav.Link as={Link} to="/periods">Список периодов</Nav.Link>
               <Nav.Link as={Link} to="/availability">Таблица доступности</Nav.Link>
               <Nav.Link as={Link} to="/missions">Миссии</Nav.Link>
+                                   {isAuthenticated && (
+                       <Nav.Link as={Link} to="/import">Импорт данных</Nav.Link>
+                     )}
+                     {isAuthenticated && (
+                       <Nav.Link as={Link} to="/users">Управление пользователями</Nav.Link>
+                     )}
+            </Nav>
+            <Nav className="ms-auto">
+              {isAuthenticated ? (
+                <UserNav />
+              ) : (
+                <>
+                  <Nav.Link as={Link} to="/login">Войти</Nav.Link>
+                  <Nav.Link as={Link} to="/register">Регистрация</Nav.Link>
+                </>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

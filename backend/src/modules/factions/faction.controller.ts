@@ -3,10 +3,9 @@ import { FactionService } from './faction.service';
 import { CreateFactionDto } from './dto/create-faction.dto';
 import { UpdateFactionDto } from './dto/update-faction.dto';
 import { Faction } from '@prisma/client';
-// Раскомментируйте, когда добавите аутентификацию
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-// import { RolesGuard } from '../auth/guards/roles.guard';
-// import { Roles } from '../auth/decorators/roles.decorator';
+import { AuthGuard } from '../../auth/auth.guard';
+import { RolesGuard } from '../../auth/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @Controller('factions')
 export class FactionController {
@@ -38,15 +37,15 @@ export class FactionController {
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   async create(@Body() createFactionDto: CreateFactionDto): Promise<Faction> {
     return this.factionService.create(createFactionDto);
   }
 
   @Patch(':id')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   async update(
     @Param('id') id: string,
     @Body() updateFactionDto: UpdateFactionDto,
@@ -55,8 +54,8 @@ export class FactionController {
   }
 
   @Delete(':id')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   async remove(@Param('id') id: string): Promise<Faction> {
     return this.factionService.remove(+id);
   }
