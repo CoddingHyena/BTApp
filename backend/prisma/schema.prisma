@@ -104,6 +104,8 @@ model Faction {
   description    String?  @db.Text
   logoUrl        String?  // Путь к логотипу/гербу
   bannerUrl      String?  // Путь к баннеру фракции
+  gameIdRef      String?  // Ссылка на модель Game
+  game           Game?    @relation(fields: [gameIdRef], references: [id])
   isMajor        Boolean  @default(false) // Флаг для основных фракций
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
@@ -163,6 +165,24 @@ model Mission {
   @@map("missions")
 }
 
+model Game {
+  id          String       @id @default(uuid())
+  name        String       @unique // Название игры
+  description String?      @db.Text // Описание игры
+  category    GameCategory // Тип игры (тактическая, стратегическая, RPG)
+  iconUrl     String?      // Путь к иконке/логотипу игры
+  bannerUrl   String?      // Путь к баннеру игры
+  isActive    Boolean      @default(true) // Активна ли игра
+  sortOrder   Int          @unique // Порядок сортировки
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Связь с фракциями
+  factions    Faction[]
+
+  @@map("games")
+}
+
 enum MissionType {
   CLASSIC
   ALPHA_STRIKE
@@ -172,6 +192,19 @@ enum MissionDifficulty {
   EASY
   MEDIUM
   HARD
+}
+
+enum GameType {
+  CLASSIC_BT
+  ALPHA_STRIKE
+}
+
+enum GameCategory {
+  TACTICAL
+  STRATEGIC
+  RPG
+  BOARD_GAME
+  MINIATURES
 }
 
 // Enum для ролей пользователей

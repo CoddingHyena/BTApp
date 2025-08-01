@@ -49,6 +49,11 @@ export class CreateFactionDto {
   @IsString()
   bannerUrl?: string;
 
+  @ApiProperty({ description: 'ID игры, к которой относится фракция', required: false })
+  @IsOptional()
+  @IsString()
+  gameIdRef?: string;
+
   @ApiProperty({ description: 'Является ли фракция основной', default: false, required: false })
   @IsOptional()
   @IsBoolean()

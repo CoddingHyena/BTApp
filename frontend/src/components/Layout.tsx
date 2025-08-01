@@ -111,6 +111,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Nav.Link as={Link} to="/">Главная</Nav.Link>
               <Nav.Link as={Link} to="/mechs">Список мехов</Nav.Link>
               <Nav.Link as={Link} to="/factions">Список фракций</Nav.Link>
+              {isAuthenticated && (
+                <Nav.Link as={Link} to="/factions/manage">Управление фракциями</Nav.Link>
+              )}
+              {isAuthenticated && (
+                <Nav.Link as={Link} to="/games/manage">Управление играми</Nav.Link>
+              )}
               <Nav.Link as={Link} to="/periods">Список периодов</Nav.Link>
               <Nav.Link as={Link} to="/availability">Таблица доступности</Nav.Link>
               <Nav.Link as={Link} to="/missions">Миссии</Nav.Link>
