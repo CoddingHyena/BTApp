@@ -9,6 +9,7 @@ import { PeriodModule } from './modules/period/periods.module';
 import { FactionModule } from './modules/factions/faction.module';
 import { MechAvailabilityModule } from './modules/mech-availability/mech-availability.module';
 import { MissionModule } from './modules/mission/mission.module';
+import { GameModule } from './modules/game/game.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     FactionModule,
     MechAvailabilityModule,
     MissionModule,
+    GameModule,
   ],
 })
 export class AppModule {}

@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // import { Mech, RawMech } from '../../types/mech';
 import { Mech, RawMech, ImportResult } from '../../types/mech';
-import { Faction } from '../../types/faction';
+import { Faction, CreateFactionDto, UpdateFactionDto } from '../../types/faction';
+import { Game, CreateGameDto, UpdateGameDto } from '../../types/game';
 import { Period } from '../../types/period';
 import { MechAvailability } from '../../types/availability';
 import { Mission, CreateMissionDto, UpdateMissionDto } from '../../types/mission';
@@ -11,7 +12,7 @@ import { API_BASE_URL } from '../../config/api';
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
-  tagTypes: ['Mech', 'Faction', 'Period', 'MechAvailability', 'Mission'],
+  tagTypes: ['Mech', 'Faction', 'Game', 'Period', 'MechAvailability', 'Mission'],
   endpoints: (builder) => ({
     // Mech endpoints
     getMechs: builder.query<Mech[], void>({
@@ -63,6 +64,84 @@ export const apiSlice = createApi({
     getMajorFactions: builder.query<Faction[], void>({
       query: () => '/factions/major',
       providesTags: [{ type: 'Faction', id: 'MAJOR' }],
+    }),
+    getFactionById: builder.query<Faction, string>({
+      query: (id) => `/factions/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Faction', id }],
+    }),
+    getFactionByCode: builder.query<Faction, string>({
+      query: (code) => `/factions/code/${code}`,
+      providesTags: (result, error, code) => [{ type: 'Faction', id: code }],
+    }),
+    createFaction: builder.mutation<Faction, CreateFactionDto>({
+      query: (faction) => ({
+        url: '/factions',
+        method: 'POST',
+        body: faction,
+      }),
+      invalidatesTags: [{ type: 'Faction', id: 'LIST' }],
+    }),
+    updateFaction: builder.mutation<Faction, UpdateFactionDto & { id: string }>({
+      query: ({ id, ...faction }) => ({
+        url: `/factions/${id}`,
+        method: 'PATCH',
+        body: faction,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Faction', id }],
+    }),
+    deleteFaction: builder.mutation<Faction, string>({
+      query: (id) => ({
+        url: `/factions/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Faction', id: 'LIST' }],
+    }),
+
+    // Game endpoints
+    getGames: builder.query<Game[], void>({
+      query: () => '/games',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Game' as const, id })),
+              { type: 'Game', id: 'LIST' },
+            ]
+          : [{ type: 'Game', id: 'LIST' }],
+    }),
+    getActiveGames: builder.query<Game[], void>({
+      query: () => '/games/active',
+      providesTags: [{ type: 'Game', id: 'ACTIVE' }],
+    }),
+    getGameById: builder.query<Game, string>({
+      query: (id) => `/games/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Game', id }],
+    }),
+    getGameByName: builder.query<Game, string>({
+      query: (name) => `/games/name/${name}`,
+      providesTags: (result, error, name) => [{ type: 'Game', id: name }],
+    }),
+    createGame: builder.mutation<Game, CreateGameDto>({
+      query: (game) => ({
+        url: '/games',
+        method: 'POST',
+        body: game,
+      }),
+      invalidatesTags: [{ type: 'Game', id: 'LIST' }],
+    }),
+    updateGame: builder.mutation<Game, UpdateGameDto & { id: string }>({
+      query: ({ id, ...game }) => ({
+        url: `/games/${id}`,
+        method: 'PATCH',
+        body: game,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Game', id }],
+    }),
+    deleteGame: builder.mutation<Game, string>({
+      query: (id) => ({
+        url: `/games/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Game', id: 'LIST' }],
     }),
 
     // Period endpoints
@@ -180,6 +259,18 @@ export const {
   useGetFactionsQuery,
   useGetActiveFactionsQuery,
   useGetMajorFactionsQuery,
+  useGetFactionByIdQuery,
+  useGetFactionByCodeQuery,
+  useCreateFactionMutation,
+  useUpdateFactionMutation,
+  useDeleteFactionMutation,
+  useGetGamesQuery,
+  useGetActiveGamesQuery,
+  useGetGameByIdQuery,
+  useGetGameByNameQuery,
+  useCreateGameMutation,
+  useUpdateGameMutation,
+  useDeleteGameMutation,
   useGetPeriodsQuery,
   useGetMechAvailabilitiesQuery,
   useImportCsvMutation,

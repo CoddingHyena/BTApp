@@ -25,6 +25,7 @@ import { PrismaClient } from '@prisma/client';
 import { seedPeriods } from './seeds/period.seeds';
 import { seedFactions } from './seeds/faction.seeds';
 import { seedMechAvailability } from './seeds/mech-availability.seeds';
+import { seedGames } from './seeds/game.seeds';
 
 const prisma = new PrismaClient();
 
@@ -33,6 +34,9 @@ async function main() {
     // Последовательно запускаем seed-скрипты
     await seedPeriods(prisma);
     console.log('Periods seeding completed');
+    
+    await seedGames(prisma);
+    console.log('Games seeding completed');
     
     await seedFactions(prisma);
     console.log('Factions seeding completed');

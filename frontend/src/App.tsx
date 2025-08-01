@@ -9,6 +9,8 @@ import HomePage from './pages/HomePage';
 import ImportPage from './pages/ImportPage';
 import MechListPage from './pages/MechListPage';
 import FactionListPage from './pages/FactionListPage';
+import FactionManagementPage from './pages/FactionManagementPage';
+import GameManagementPage from './pages/GameManagementPage';
 import PeriodListPage from './pages/PeriodListPage';
 import MechAvailabilityPage from './pages/AvailabilityPage';
 import MissionListPage from './pages/MissionListPage';
@@ -44,6 +46,18 @@ function App() {
                  <Route path="/users" element={
                    <ProtectedRoute requiredRoles={['ADMIN']}>
                      <UserManagementPage />
+                   </ProtectedRoute>
+                 } />
+
+                 <Route path="/factions/manage" element={
+                   <ProtectedRoute requiredRoles={['ADMIN']}>
+                     <FactionManagementPage />
+                   </ProtectedRoute>
+                 } />
+
+                 <Route path="/games/manage" element={
+                   <ProtectedRoute requiredRoles={['ADMIN']}>
+                     <GameManagementPage />
                    </ProtectedRoute>
                  } />
 
