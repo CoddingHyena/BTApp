@@ -265,7 +265,7 @@ const ImportPage: React.FC = () => {
             disabled={!file || isLoading}
             className="mt-4"
           >
-            {isLoading ? 'Импорт...' : 'Импортировать данные'}
+            {isLoading ? 'Импорт...' : 'Настраиваемый импорт'}
           </Button>
         </Card.Body>
       </Card>

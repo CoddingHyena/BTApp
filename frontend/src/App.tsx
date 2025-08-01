@@ -11,6 +11,7 @@ import MechListPage from './pages/MechListPage';
 import FactionListPage from './pages/FactionListPage';
 import FactionManagementPage from './pages/FactionManagementPage';
 import GameManagementPage from './pages/GameManagementPage';
+import RawMechValidationPage from './pages/RawMechValidationPage';
 import PeriodListPage from './pages/PeriodListPage';
 import MechAvailabilityPage from './pages/AvailabilityPage';
 import MissionListPage from './pages/MissionListPage';
@@ -55,13 +56,19 @@ function App() {
                    </ProtectedRoute>
                  } />
 
-                 <Route path="/games/manage" element={
-                   <ProtectedRoute requiredRoles={['ADMIN']}>
-                     <GameManagementPage />
-                   </ProtectedRoute>
-                 } />
+                                                <Route path="/games/manage" element={
+                                 <ProtectedRoute requiredRoles={['ADMIN']}>
+                                   <GameManagementPage />
+                                 </ProtectedRoute>
+                               } />
 
-                 <Route path="/mechs" element={<MechListPage />} />
+                               <Route path="/raw-mechs/validate" element={
+                                 <ProtectedRoute requiredRoles={['ADMIN']}>
+                                   <RawMechValidationPage />
+                                 </ProtectedRoute>
+                               } />
+
+                               <Route path="/mechs" element={<MechListPage />} />
           <Route path="/factions" element={<FactionListPage />} />
           <Route path="/periods" element={<PeriodListPage />} />
           <Route path="/availability" element={<MechAvailabilityPage />} />

@@ -10,6 +10,8 @@ import { FactionModule } from './modules/factions/faction.module';
 import { MechAvailabilityModule } from './modules/mech-availability/mech-availability.module';
 import { MissionModule } from './modules/mission/mission.module';
 import { GameModule } from './modules/game/game.module';
+import { RawMechModule } from './modules/raw-mech/raw-mech.module';
+import { MechModule } from './modules/mech/mech.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -22,6 +24,8 @@ import { AuthModule } from './auth/auth.module';
     MechAvailabilityModule,
     MissionModule,
     GameModule,
+    RawMechModule,
+    MechModule,
   ],
 })
 export class AppModule {}
