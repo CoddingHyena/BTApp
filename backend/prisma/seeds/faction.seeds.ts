@@ -12,14 +12,14 @@ export async function seedFactions(prismaClient: PrismaClient) {
 
     // Получаем ID игр для связывания
     const battletechGame = await client.game.findUnique({
-      where: { name: 'BattleTech' }
+      where: { name: 'Battletech' }
     });
     
-    const alphaStrikeGame = await client.game.findUnique({
-      where: { name: 'Alpha Strike' }
+    const trenchCrusadeGame = await client.game.findUnique({
+      where: { name: 'Trench Crusade' }
     });
 
-    if (!battletechGame || !alphaStrikeGame) {
+    if (!battletechGame || !trenchCrusadeGame) {
       throw new Error('Games not found. Please run game seeding first.');
     }
 
@@ -133,7 +133,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         description: 'One of the original Clans founded by Nicholas Kerensky, Clan Wolf is named after the Timber Wolf (Canis lupus). They are known for their pragmatism and adaptability compared to other Clans.',
         logoUrl: 'factions/logos/clan-wolf.png',
         bannerUrl: 'factions/banners/clan-wolf.jpg',
-        gameIdRef: alphaStrikeGame.id,
+        gameIdRef: trenchCrusadeGame.id,
         isMajor: true,
         isActive: true,
       },
@@ -147,7 +147,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         description: 'One of the original Clans founded by Nicholas Kerensky, Clan Jade Falcon is known for their strict adherence to Clan ways and their particular rivalry with Clan Wolf.',
         logoUrl: 'factions/logos/clan-jade-falcon.png',
         bannerUrl: 'factions/banners/clan-jade-falcon.jpg',
-        gameIdRef: alphaStrikeGame.id,
+        gameIdRef: trenchCrusadeGame.id,
         isMajor: true,
         isActive: true,
       },
@@ -161,7 +161,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         description: 'One of the original Clans founded by Nicholas Kerensky, Clan Ghost Bear is known for their strength, perseverance, and strong family bonds, unusual among the Clans.',
         logoUrl: 'factions/logos/clan-ghost-bear.png',
         bannerUrl: 'factions/banners/clan-ghost-bear.jpg',
-        gameIdRef: alphaStrikeGame.id,
+        gameIdRef: trenchCrusadeGame.id,
         isMajor: true,
         isActive: true,
       },

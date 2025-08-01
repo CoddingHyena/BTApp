@@ -114,10 +114,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {isAuthenticated && (
                 <Nav.Link as={Link} to="/factions/manage">Управление фракциями</Nav.Link>
               )}
-              {isAuthenticated && (
-                <Nav.Link as={Link} to="/games/manage">Управление играми</Nav.Link>
-              )}
-              <Nav.Link as={Link} to="/periods">Список периодов</Nav.Link>
+                                  {isAuthenticated && (
+                      <Nav.Link as={Link} to="/games/manage">Управление играми</Nav.Link>
+                    )}
+                    {isAuthenticated && (
+                      <Nav.Link as={Link} to="/raw-mechs/validate">Валидация мехов</Nav.Link>
+                    )}
+                    <Nav.Link as={Link} to="/periods">Список периодов</Nav.Link>
               <Nav.Link as={Link} to="/availability">Таблица доступности</Nav.Link>
               <Nav.Link as={Link} to="/missions">Миссии</Nav.Link>
                                    {isAuthenticated && (

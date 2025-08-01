@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // import { Mech, RawMech } from '../../types/mech';
-import { Mech, RawMech, ImportResult } from '../../types/mech';
+import { Mech, RawMech, ImportResult, ValidateRawMechDto, CreateMechDto, UpdateMechDto } from '../../types/mech';
 import { Faction, CreateFactionDto, UpdateFactionDto } from '../../types/faction';
 import { Game, CreateGameDto, UpdateGameDto } from '../../types/game';
 import { Period } from '../../types/period';
@@ -11,8 +11,18 @@ import { API_BASE_URL } from '../../config/api';
 // Define a service using a base URL and expected endpoints
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
-  tagTypes: ['Mech', 'Faction', 'Game', 'Period', 'MechAvailability', 'Mission'],
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: API_BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      // Получаем токен из localStorage
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ['Mech', 'RawMech', 'Faction', 'Game', 'Period', 'MechAvailability', 'Mission'],
   endpoints: (builder) => ({
     // Mech endpoints
     getMechs: builder.query<Mech[], void>({
@@ -29,7 +39,11 @@ export const apiSlice = createApi({
       query: (id) => `/mechs/${id}`,
       providesTags: (result, error, id) => [{ type: 'Mech', id }],
     }),
-    createMech: builder.mutation<Mech, Partial<Mech>>({
+    getMechByDbId: builder.query<Mech, number>({
+      query: (dbId) => `/mechs/dbid/${dbId}`,
+      providesTags: (result, error, dbId) => [{ type: 'Mech', id: dbId.toString() }],
+    }),
+    createMech: builder.mutation<Mech, CreateMechDto>({
       query: (mech) => ({
         url: '/mechs',
         method: 'POST',
@@ -37,13 +51,78 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
     }),
-    updateMech: builder.mutation<Mech, Partial<Mech> & { id: string }>({
+    updateMech: builder.mutation<Mech, UpdateMechDto & { id: string }>({
       query: ({ id, ...mech }) => ({
         url: `/mechs/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: mech,
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Mech', id }],
+    }),
+    deleteMech: builder.mutation<Mech, string>({
+      query: (id) => ({
+        url: `/mechs/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
+    }),
+
+    // RawMech endpoints
+    getRawMechs: builder.query<RawMech[], void>({
+      query: () => '/raw-mechs',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'RawMech' as const, id })),
+              { type: 'RawMech', id: 'LIST' },
+            ]
+          : [{ type: 'RawMech', id: 'LIST' }],
+    }),
+    getRawMechsValidated: builder.query<RawMech[], void>({
+      query: () => '/raw-mechs/validated',
+      providesTags: [{ type: 'RawMech', id: 'VALIDATED' }],
+    }),
+    getRawMechsPending: builder.query<RawMech[], void>({
+      query: () => '/raw-mechs/pending',
+      providesTags: [{ type: 'RawMech', id: 'PENDING' }],
+    }),
+    getRawMechById: builder.query<RawMech, string>({
+      query: (id) => `/raw-mechs/${id}`,
+      providesTags: (result, error, id) => [{ type: 'RawMech', id }],
+    }),
+    updateRawMech: builder.mutation<RawMech, { id: string; validated?: boolean }>({
+      query: ({ id, ...data }) => ({
+        url: `/raw-mechs/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'RawMech', id },
+        { type: 'RawMech', id: 'LIST' },
+        { type: 'RawMech', id: 'VALIDATED' },
+        { type: 'RawMech', id: 'PENDING' },
+      ],
+    }),
+    validateRawMech: builder.mutation<{ rawMech: RawMech; mech?: Mech }, { id: string; validated: boolean }>({
+      query: ({ id, validated }) => ({
+        url: `/raw-mechs/${id}/validate`,
+        method: 'PATCH',
+        body: { validated },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'RawMech', id },
+        { type: 'RawMech', id: 'LIST' },
+        { type: 'RawMech', id: 'VALIDATED' },
+        { type: 'RawMech', id: 'PENDING' },
+        { type: 'Mech', id: 'LIST' },
+      ],
+    }),
+    deleteRawMech: builder.mutation<RawMech, string>({
+      query: (id) => ({
+        url: `/raw-mechs/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'RawMech', id: 'LIST' }],
     }),
 
     // Faction endpoints
@@ -177,13 +256,13 @@ export const apiSlice = createApi({
     //   }),
     //   invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
     // }),
-    importCsv: builder.mutation<ImportResult | { mechs: RawMech[] }, FormData>({
+    importCsv: builder.mutation<ImportResult, FormData>({
         query: (formData) => ({
-          url: '/import/mechs/csv', // путь соответствует вашему бэкенд контроллеру
+          url: '/import/mechs/csv',
           method: 'POST',
           body: formData,
         }),
-        invalidatesTags: [{ type: 'Mech', id: 'LIST' }],
+        invalidatesTags: [{ type: 'RawMech', id: 'LIST' }, { type: 'RawMech', id: 'PENDING' }],
       }),
     exportCsv: builder.query<Blob, void>({
       query: () => ({
@@ -254,8 +333,17 @@ export const apiSlice = createApi({
 export const {
   useGetMechsQuery,
   useGetMechByIdQuery,
+  useGetMechByDbIdQuery,
   useCreateMechMutation,
   useUpdateMechMutation,
+  useDeleteMechMutation,
+  useGetRawMechsQuery,
+  useGetRawMechsValidatedQuery,
+  useGetRawMechsPendingQuery,
+  useGetRawMechByIdQuery,
+  useUpdateRawMechMutation,
+  useValidateRawMechMutation,
+  useDeleteRawMechMutation,
   useGetFactionsQuery,
   useGetActiveFactionsQuery,
   useGetMajorFactionsQuery,
