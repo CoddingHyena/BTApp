@@ -44,8 +44,5 @@ export class CreatePeriodDto {
   @IsString()
   bannerUrl?: string;
 
-  @ApiProperty({ description: 'Активен ли период', default: true, required: false })
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+
 }

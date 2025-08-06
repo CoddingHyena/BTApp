@@ -1,98 +1,362 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Auth Service - Микросервис аутентификации
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 Описание
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Auth Service - это отдельный микросервис, отвечающий за аутентификацию и авторизацию пользователей в системе BTApp. Сервис предоставляет REST API для регистрации, входа, управления пользователями и работы с JWT токенами.
 
-## Description
+## 🏗️ Архитектура
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Технологический стек:
+- **NestJS** - основной фреймворк
+- **TypeScript** - язык программирования
+- **Prisma ORM** - работа с базой данных
+- **PostgreSQL** - база данных
+- **JWT** - JSON Web Tokens для аутентификации
+- **bcrypt** - хеширование паролей
+- **class-validator** - валидация данных
 
-## Project setup
-
-```bash
-$ npm install
+### Структура проекта:
+```
+auth-service/
+├── auth/                    # Модуль аутентификации
+│   ├── auth.controller.ts   # Контроллер аутентификации
+│   ├── auth.service.ts      # Сервис аутентификации
+│   ├── auth.module.ts       # Модуль аутентификации
+│   ├── strategies/          # Стратегии аутентификации
+│   │   ├── jwt.strategy.ts  # JWT стратегия
+│   │   └── local.strategy.ts # Локальная стратегия
+│   ├── guards/              # Гварды
+│   │   └── jwt-auth.guard.ts # JWT гвард
+│   └── dto/                 # Data Transfer Objects
+│       ├── login.dto.ts     # DTO для входа
+│       ├── register.dto.ts  # DTO для регистрации
+│       ├── update-user-role.dto.ts # DTO для обновления роли
+│       └── update-user-status.dto.ts # DTO для обновления статуса
+├── users/                   # Модуль пользователей
+│   ├── users.controller.ts  # Контроллер пользователей
+│   ├── users.service.ts     # Сервис пользователей
+│   ├── users.module.ts      # Модуль пользователей
+│   └── dto/                 # DTO пользователей
+│       ├── create-user.dto.ts # DTO создания пользователя
+│       └── update-user.dto.ts # DTO обновления пользователя
+├── prisma/                  # Работа с базой данных
+│   ├── schema.prisma        # Схема базы данных
+│   ├── prisma.service.ts    # Сервис Prisma
+│   ├── prisma.module.ts     # Модуль Prisma
+│   └── seed.ts              # Сиды для базы данных
+├── guards/                  # Глобальные гварды
+├── decorators/              # Декораторы
+├── dto/                     # Общие DTO
+└── types/                   # Типы TypeScript
+    └── user.types.ts        # Типы пользователя
 ```
 
-## Compile and run the project
+## 🔐 Функциональность
 
-```bash
-# development
-$ npm run start
+### Аутентификация:
+- **Регистрация** - создание нового пользователя
+- **Вход** - аутентификация с получением JWT токена
+- **Обновление токена** - получение нового access токена
+- **Выход** - инвалидация токенов
 
-# watch mode
-$ npm run start:dev
+### Управление пользователями:
+- **CRUD операции** - создание, чтение, обновление, удаление
+- **Управление ролями** - назначение ролей (PLAYER, MODERATOR, ADMIN)
+- **Управление статусом** - активация/деактивация пользователей
+- **Верификация** - подтверждение email адреса
 
-# production mode
-$ npm run start:prod
+### Безопасность:
+- **Хеширование паролей** - bcrypt с солью
+- **JWT токены** - access и refresh токены
+- **Валидация данных** - проверка входных данных
+- **Роли и права** - система ролей для авторизации
+
+## 🗄️ Модель данных
+
+### User (Пользователь):
+```typescript
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  username    String   @unique
+  password    String   // Хешированный пароль
+  role        UserRole @default(PLAYER)
+  firstName   String?
+  lastName    String?
+  avatar      String?  // URL аватара
+  isActive    Boolean  @default(true)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastLoginAt DateTime?
+  refreshTokens RefreshToken[]
+}
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### RefreshToken (Токен обновления):
+```typescript
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+### Роли пользователей:
+```typescript
+enum UserRole {
+  PLAYER     // Обычный игрок
+  MODERATOR  // Модератор
+  ADMIN      // Администратор
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 🚀 API Endpoints
 
-## Resources
+### Аутентификация:
+- `POST /auth/register` - Регистрация пользователя
+- `POST /auth/login` - Вход в систему
+- `POST /auth/refresh` - Обновление токена
+- `POST /auth/logout` - Выход из системы
 
-Check out a few resources that may come in handy when working with NestJS:
+### Пользователи:
+- `GET /users` - Получение списка пользователей
+- `GET /users/:id` - Получение пользователя по ID
+- `POST /users` - Создание пользователя
+- `PATCH /users/:id` - Обновление пользователя
+- `DELETE /users/:id` - Удаление пользователя
+- `PATCH /users/:id/role` - Обновление роли пользователя
+- `PATCH /users/:id/status` - Обновление статуса пользователя
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 🔧 Установка и запуск
 
-## Support
+### Предварительные требования:
+- Node.js 18+
+- PostgreSQL 12+
+- npm или yarn
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Установка зависимостей:
+```bash
+npm install
+```
 
-## Stay in touch
+### Настройка базы данных:
+1. Создайте базу данных PostgreSQL
+2. Настройте переменную окружения `DATABASE_URL` в `.env`
+3. Выполните миграции:
+```bash
+npm run prisma:migrate
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Заполнение базы данных:
+```bash
+npm run prisma:seed
+```
 
-## License
+### Запуск в режиме разработки:
+```bash
+npm run start:dev
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Сборка и запуск в продакшене:
+```bash
+npm run build
+npm run start:prod
+```
+
+## ⚙️ Конфигурация
+
+### Переменные окружения (.env):
+```env
+# База данных
+DATABASE_URL="postgresql://username:password@localhost:5432/auth_db"
+
+# JWT
+JWT_SECRET="your-super-secret-key"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_SECRET="your-refresh-secret-key"
+JWT_REFRESH_EXPIRES_IN="7d"
+
+# Порт сервера
+PORT=3002
+```
+
+### Настройки JWT:
+- **Access Token** - короткий срок жизни (15 минут)
+- **Refresh Token** - длительный срок жизни (7 дней)
+- **Автоматическое обновление** токенов при истечении
+
+## 🔒 Безопасность
+
+### Хеширование паролей:
+- Используется **bcrypt** с солью
+- **12 раундов** хеширования для баланса безопасности и производительности
+- **Автоматическое хеширование** при создании/обновлении пользователя
+
+### JWT токены:
+- **Access Token** - для доступа к защищенным ресурсам
+- **Refresh Token** - для получения новых access токенов
+- **Автоматическая инвалидация** при выходе
+- **Проверка IP и User Agent** для refresh токенов
+
+### Валидация данных:
+- **class-validator** для проверки входных данных
+- **Автоматическая санитизация** данных
+- **Строгая типизация** с TypeScript
+
+## 📊 Мониторинг и логирование
+
+### Логирование:
+- **Structured logging** с NestJS Logger
+- **Различные уровни** логирования (error, warn, info, debug)
+- **Контекстная информация** в логах
+
+### Мониторинг:
+- **Health checks** для проверки состояния сервиса
+- **Метрики производительности** (время ответа, количество запросов)
+- **Обработка ошибок** с детальной информацией
+
+## 🔄 Интеграция с другими сервисами
+
+### BTApp Frontend:
+- **CORS настройки** для взаимодействия с фронтендом
+- **Единая система аутентификации** для всего приложения
+- **Передача токенов** через HTTP заголовки
+
+### BTApp Backend:
+- **Верификация токенов** для доступа к API
+- **Передача информации о пользователе** в заголовках
+- **Синхронизация ролей** между сервисами
+
+## 🧪 Тестирование
+
+### Unit тесты:
+```bash
+npm run test
+```
+
+### E2E тесты:
+```bash
+npm run test:e2e
+```
+
+### Покрытие кода:
+```bash
+npm run test:cov
+```
+
+## 📝 Примеры использования
+
+### Регистрация пользователя:
+```bash
+curl -X POST http://localhost:3002/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "username": "testuser",
+    "password": "password123",
+    "firstName": "Иван",
+    "lastName": "Иванов"
+  }'
+```
+
+### Вход в систему:
+```bash
+curl -X POST http://localhost:3002/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "password123"
+  }'
+```
+
+### Обновление роли пользователя:
+```bash
+curl -X PATCH http://localhost:3002/users/123/role \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "role": "MODERATOR"
+  }'
+```
+
+## 🚨 Обработка ошибок
+
+### Типичные ошибки:
+- **400 Bad Request** - неверные данные запроса
+- **401 Unauthorized** - отсутствие или неверный токен
+- **403 Forbidden** - недостаточно прав
+- **404 Not Found** - пользователь не найден
+- **409 Conflict** - пользователь уже существует
+- **500 Internal Server Error** - внутренняя ошибка сервера
+
+### Структура ответа с ошибкой:
+```json
+{
+  "statusCode": 400,
+  "message": "Validation failed",
+  "error": "Bad Request",
+  "details": [
+    {
+      "field": "email",
+      "message": "Email must be a valid email address"
+    }
+  ]
+}
+```
+
+## 🔄 Миграции и обновления
+
+### Создание миграции:
+```bash
+npm run prisma:migrate:dev
+```
+
+### Применение миграций:
+```bash
+npm run prisma:migrate:deploy
+```
+
+### Сброс базы данных:
+```bash
+npm run prisma:migrate:reset
+```
+
+## 📚 Дополнительные ресурсы
+
+### Документация:
+- [NestJS Documentation](https://docs.nestjs.com/)
+- [Prisma Documentation](https://www.prisma.io/docs/)
+- [JWT.io](https://jwt.io/)
+
+### Полезные команды:
+- `npm run start:dev` - запуск в режиме разработки
+- `npm run build` - сборка проекта
+- `npm run start:prod` - запуск в продакшене
+- `npm run prisma:studio` - открытие Prisma Studio
+- `npm run prisma:generate` - генерация Prisma клиента
+
+## 🤝 Вклад в проект
+
+### Стандарты кодирования:
+- **ESLint** для проверки кода
+- **Prettier** для форматирования
+- **TypeScript strict mode** для строгой типизации
+- **Conventional Commits** для сообщений коммитов
+
+### Процесс разработки:
+1. Создание feature ветки
+2. Разработка функциональности
+3. Написание тестов
+4. Code review
+5. Merge в main ветку
+
+---
+
+**Auth Service** - надежный и безопасный микросервис аутентификации для системы BTApp, обеспечивающий современные стандарты безопасности и удобство использования.

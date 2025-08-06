@@ -1,147 +1,102 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Button, Alert, Modal, Spinner } from 'react-bootstrap';
-import { useGetFactionsQuery, useDeleteFactionMutation } from '../store/api/apiSlice';
-import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
-import {
-  selectAllFactions,
-  setFactions,
-  selectFactionsStatus
-} from '../store/slices/factionSlice';
-import FactionForm from '../components/FactionForm';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, Button, Spinner, Alert, Modal, Form } from 'react-bootstrap';
+import { useGetFactionsQuery, useDeleteFactionMutation, useGetGamesQuery } from '../store/api/apiSlice';
 import { Faction } from '../types/faction';
+import FactionForm from '../components/FactionForm';
+import FactionCard from '../components/FactionCard';
 
 const FactionManagementPage: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { data: factions, isLoading, isError, error, status, refetch } = useGetFactionsQuery();
+  const { data: games } = useGetGamesQuery();
+  const [deleteFaction] = useDeleteFactionMutation();
+  const [storedFactions, setStoredFactions] = useState<Faction[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingFaction, setEditingFaction] = useState<Faction | null>(null);
   const [deletingFaction, setDeletingFaction] = useState<Faction | null>(null);
-  
-  // Get factions from RTK Query
-  const {
-    data: factions,
-    isLoading,
-    isError,
-    error,
-    refetch
-  } = useGetFactionsQuery();
-  
-  // Get factions from Redux store
-  const storedFactions = useAppSelector(selectAllFactions);
-  const status = useAppSelector(selectFactionsStatus);
-  
-  const [deleteFaction, { isLoading: isDeleting }] = useDeleteFactionMutation();
-  
-  // Update factions in the store when data is loaded
-  React.useEffect(() => {
-    if (factions) {
-      dispatch(setFactions(factions));
+  const [majorFilter, setMajorFilter] = useState<string>('all'); // 'all', 'major', 'minor'
+  const [gameFilter, setGameFilter] = useState<string>('all'); // 'all', 'battletech', 'trench-crusade'
+
+  useEffect(() => {
+    if (factions && games) {
+      let filteredFactions = factions;
+      
+      // Применяем фильтр по типу фракции
+      if (majorFilter === 'major') {
+        filteredFactions = factions.filter(faction => faction.isMajor);
+      } else if (majorFilter === 'minor') {
+        filteredFactions = factions.filter(faction => !faction.isMajor);
+      }
+      
+      // Применяем фильтр по игре
+      if (gameFilter === 'battletech') {
+        const battletechGame = games.find(game => game.name === 'Battletech');
+        if (battletechGame) {
+          filteredFactions = filteredFactions.filter(faction => 
+            faction.gameIdRef === battletechGame.id
+          );
+        }
+      } else if (gameFilter === 'trench-crusade') {
+        const trenchCrusadeGame = games.find(game => game.name === 'Trench Crusade');
+        if (trenchCrusadeGame) {
+          filteredFactions = filteredFactions.filter(faction => 
+            faction.gameIdRef === trenchCrusadeGame.id
+          );
+        }
+      }
+      
+      setStoredFactions(filteredFactions);
     }
-  }, [factions, dispatch]);
-  
+  }, [factions, games, majorFilter, gameFilter]);
+
   const handleCreateSuccess = () => {
     setShowCreateModal(false);
-    refetch();
+    refetch(); // Обновляем данные после создания
   };
-  
+
   const handleEditSuccess = () => {
     setEditingFaction(null);
-    refetch();
+    refetch(); // Обновляем данные после редактирования
   };
-  
+
+  const handleImageUploaded = () => {
+    console.log('handleImageUploaded called, will refetch data in 1 second');
+    // Добавляем небольшую задержку, чтобы дать время базе данных обновиться
+    setTimeout(() => {
+      console.log('Refetching data after image upload');
+      refetch(); // Обновляем данные после загрузки изображения
+    }, 1000);
+  };
+
   const handleDelete = async () => {
     if (deletingFaction) {
       try {
         await deleteFaction(deletingFaction.id).unwrap();
         setDeletingFaction(null);
-        refetch();
+        refetch(); // Обновляем данные после удаления
       } catch (err) {
         console.error('Error deleting faction:', err);
       }
     }
   };
-  
-  const renderFactionCard = (faction: Faction) => (
-    <Col key={faction.id} xs={12} md={6} lg={4}>
-      <Card className="h-100 faction-card">
-        {faction.bannerUrl && (
-          <Card.Img 
-            variant="top" 
-            src={faction.bannerUrl}
-            alt={`${faction.name} banner`}
-            style={{ height: '140px', objectFit: 'cover' }}
-          />
-        )}
-        <Card.Body>
-          <div className="d-flex align-items-center mb-3">
-            {faction.logoUrl && (
-              <img 
-                src={faction.logoUrl} 
-                alt={`${faction.name} logo`}
-                className="me-3"
-                style={{ width: '40px', height: '40px' }}
-              />
-            )}
-            <Card.Title>{faction.name}</Card.Title>
-          </div>
-          <Card.Subtitle className="mb-2 text-muted">{faction.code}</Card.Subtitle>
-          <Card.Text>{faction.description}</Card.Text>
-          <div className="faction-colors d-flex mb-2">
-            <div 
-              className="color-box me-2" 
-              style={{
-                backgroundColor: faction.primaryColor,
-                width: '20px',
-                height: '20px',
-                border: '1px solid #ddd'
-              }}
-            />
-            <div 
-              className="color-box" 
-              style={{
-                backgroundColor: faction.secondaryColor,
-                width: '20px',
-                height: '20px',
-                border: '1px solid #ddd'
-              }}
-            />
-          </div>
-          <div className="mb-2">
-            <span className={`badge ${faction.isMajor ? 'bg-primary' : 'bg-secondary'} me-2`}>
-              {faction.isMajor ? 'Major' : 'Minor'}
-            </span>
-            <span className={`badge ${faction.isActive ? 'bg-success' : 'bg-danger'}`}>
-              {faction.isActive ? 'Active' : 'Inactive'}
-            </span>
-          </div>
-        </Card.Body>
-        <Card.Footer className="text-muted">
-          Formed: {faction.formationYear}
-          {faction.dissolutionYear && ` - Dissolved: ${faction.dissolutionYear}`}
-        </Card.Footer>
-        <Card.Footer>
-          <div className="d-flex gap-2">
-            <Button 
-              variant="outline-primary" 
-              size="sm"
-              onClick={() => setEditingFaction(faction)}
-            >
-              Edit
-            </Button>
-            <Button 
-              variant="outline-danger" 
-              size="sm"
-              onClick={() => setDeletingFaction(faction)}
-            >
-              Delete
-            </Button>
-          </div>
-        </Card.Footer>
-      </Card>
-    </Col>
-  );
-  
+
+  const handleEdit = (faction: Faction) => {
+    setEditingFaction(faction);
+  };
+
+  const handleDeleteClick = (faction: Faction) => {
+    setDeletingFaction(faction);
+  };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMajorFilter(e.target.value);
+  };
+
+  const handleGameFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setGameFilter(e.target.value);
+  };
+
   const renderContent = () => {
-    if (isLoading && status === 'loading') {
+    if (isLoading) {
       return (
         <div className="text-center my-5">
           <Spinner animation="border" role="status">
@@ -151,10 +106,10 @@ const FactionManagementPage: React.FC = () => {
       );
     }
     
-    if (isError && status === 'failed' && storedFactions.length === 0) {
+    if (isError && storedFactions.length === 0) {
       return (
         <Alert variant="danger">
-          Error loading factions: {error instanceof Error ? error.message : 'Unknown error'}
+          Error loading factions: {error?.toString() || 'Unknown error'}
         </Alert>
       );
     }
@@ -168,19 +123,28 @@ const FactionManagementPage: React.FC = () => {
     }
     
     return (
-      <Row className="g-4">
-        {storedFactions.map(renderFactionCard)}
+      <Row xs={1} md={2} lg={3} className="g-4">
+        {storedFactions.map((faction) => (
+          <Col key={faction.id}>
+            <FactionCard 
+              faction={faction}
+              showActions={true}
+              onEdit={handleEdit}
+              onDelete={handleDeleteClick}
+            />
+          </Col>
+        ))}
       </Row>
     );
   };
-  
+
   return (
     <Container className="py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1>Faction Management</h1>
-          <p className="lead mb-0">
-            Manage BattleTech factions. Create, edit, and delete factions.
+          <h1 className="mb-2">Faction Management</h1>
+          <p className="text-muted mb-0">
+            Manage BattleTech factions, their details, and visual assets.
           </p>
         </div>
         <Button 
@@ -190,30 +154,64 @@ const FactionManagementPage: React.FC = () => {
           Create New Faction
         </Button>
       </div>
+
+      {/* Фильтр по типу фракции */}
+      <div className="mb-4">
+        <Row>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>Filter by Faction Type</Form.Label>
+              <Form.Select 
+                value={majorFilter} 
+                onChange={handleFilterChange}
+              >
+                <option value="all">Все фракции</option>
+                <option value="major">Ведущие Фракции</option>
+                <option value="minor">Подфракция</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>Filter by Game</Form.Label>
+              <Form.Select 
+                value={gameFilter} 
+                onChange={handleGameFilterChange}
+              >
+                <option value="all">Все игры</option>
+                <option value="battletech">Battletech</option>
+                <option value="trench-crusade">Trench Crusade</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+      </div>
       
       {renderContent()}
       
       {/* Create Modal */}
-      <Modal 
-        show={showCreateModal} 
+      <Modal
+        show={showCreateModal}
         onHide={() => setShowCreateModal(false)}
         size="lg"
-        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Create New Faction</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FactionForm onSuccess={handleCreateSuccess} onCancel={() => setShowCreateModal(false)} />
+          <FactionForm 
+            onSuccess={handleCreateSuccess}
+            onCancel={() => setShowCreateModal(false)}
+            onImageUploaded={handleImageUploaded}
+          />
         </Modal.Body>
       </Modal>
       
       {/* Edit Modal */}
-      <Modal 
-        show={!!editingFaction} 
+      <Modal
+        show={!!editingFaction}
         onHide={() => setEditingFaction(null)}
         size="lg"
-        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Edit Faction</Modal.Title>
@@ -221,44 +219,32 @@ const FactionManagementPage: React.FC = () => {
         <Modal.Body>
           {editingFaction && (
             <FactionForm 
-              faction={editingFaction} 
-              onSuccess={handleEditSuccess} 
-              onCancel={() => setEditingFaction(null)} 
+              faction={editingFaction}
+              onCancel={() => setEditingFaction(null)}
+              onImageUploaded={handleImageUploaded}
+              onSuccess={handleEditSuccess}
             />
           )}
         </Modal.Body>
       </Modal>
       
       {/* Delete Confirmation Modal */}
-      <Modal 
+      <Modal
         show={!!deletingFaction} 
         onHide={() => setDeletingFaction(null)}
-        centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
+          <Modal.Title>Confirm Deletion</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete the faction "{deletingFaction?.name}"? 
-          This action cannot be undone.
+          Are you sure you want to delete "{deletingFaction?.name}"? This action cannot be undone.
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setDeletingFaction(null)}>
+          <Button variant="secondary" onClick={() => setDeletingFaction(null)} disabled={isLoading}>
             Cancel
           </Button>
-          <Button 
-            variant="danger" 
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <>
-                <Spinner animation="border" size="sm" className="me-2" />
-                Deleting...
-              </>
-            ) : (
-              'Delete Faction'
-            )}
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>

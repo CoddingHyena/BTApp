@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFactionDto } from './dto/create-faction.dto';
 import { UpdateFactionDto } from './dto/update-faction.dto';
@@ -6,6 +6,8 @@ import { Faction } from '@prisma/client';
 
 @Injectable()
 export class FactionService {
+  private readonly logger = new Logger(FactionService.name);
+  
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Faction[]> {
@@ -60,11 +62,24 @@ export class FactionService {
 
   async update(id: number, updateFactionDto: UpdateFactionDto): Promise<Faction> {
     try {
-      return await this.prisma.faction.update({
+      this.logger.log(`Updating faction with ID: ${id}`);
+      this.logger.log(`Update data:`, updateFactionDto);
+      
+      const updatedFaction = await this.prisma.faction.update({
         where: { id },
         data: updateFactionDto,
       });
+      
+      this.logger.log(`Faction updated successfully:`, {
+        id: updatedFaction.id,
+        name: updatedFaction.name,
+        logoUrl: updatedFaction.logoUrl,
+        bannerUrl: updatedFaction.bannerUrl
+      });
+      
+      return updatedFaction;
     } catch (error) {
+      this.logger.error(`Error updating faction with ID ${id}:`, error);
       throw new NotFoundException(`Faction with ID ${id} not found`);
     }
   }

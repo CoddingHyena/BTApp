@@ -14,12 +14,7 @@ export class PeriodService {
     });
   }
 
-  async findActive(): Promise<Period[]> {
-    return this.prisma.period.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: 'asc' },
-    });
-  }
+
 
   async findOne(id: number): Promise<Period> {
     const period = await this.prisma.period.findUnique({

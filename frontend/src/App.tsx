@@ -16,6 +16,7 @@ import PeriodListPage from './pages/PeriodListPage';
 import MechAvailabilityPage from './pages/AvailabilityPage';
 import MissionListPage from './pages/MissionListPage';
 import MissionDetailPage from './pages/MissionDetailPage';
+import BT_Page from './pages/BT_Page';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,7 +27,10 @@ function App() {
 
   useEffect(() => {
     // Проверяем аутентификацию при загрузке приложения
-    dispatch(checkAuth());
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(checkAuth());
+    }
   }, [dispatch]);
 
   return (
@@ -34,6 +38,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/bt" element={<BT_Page />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           

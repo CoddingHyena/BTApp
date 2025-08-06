@@ -28,13 +28,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Federated Suns',
         code: 'FS',
-        primaryColor: '#FFD700', // Золотой
-        secondaryColor: '#8B0000', // Темно-красный
-        formationYear: 2317,
+        primaryColor: '#FFD700',
+        secondaryColor: '#000080',
+        formationYear: 2571,
         dissolutionYear: null,
-        description: 'The Federated Suns is one of the major Successor States of the Inner Sphere, located in the "eastern" quadrant of human-inhabited space. Known for their strong military tradition and principles of personal freedom.',
-        logoUrl: 'factions/logos/federated-suns.png',
-        bannerUrl: 'factions/banners/federated-suns.jpg',
+        description: 'Одна из пяти Великих Домов, основанная Домом Дэвион. Известна своей военной традицией и рыцарским кодексом.',
+        logoUrl: 'uploads/factions/logos/DavionLogo.png',
+        bannerUrl: 'uploads/factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -42,13 +42,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Draconis Combine',
         code: 'DC',
-        primaryColor: '#FF0000', // Красный
-        secondaryColor: '#000000', // Черный
+        primaryColor: '#FF0000',
+        secondaryColor: '#000000',
         formationYear: 2319,
         dissolutionYear: null,
-        description: 'The Draconis Combine is one of the major Successor States of the Inner Sphere, ruled by House Kurita. Its society is based on a feudal Japanese model, emphasizing loyalty, honor, and duty.',
-        logoUrl: 'factions/logos/draconis-combine.png',
-        bannerUrl: 'factions/banners/draconis-combine.jpg',
+        description: 'Имперская фракция, управляемая Домом Куриты. Известна своей строгой иерархией и самурайскими традициями.',
+        logoUrl: 'uploads/factions/logos/Draconis Combine Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -56,13 +56,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Capellan Confederation',
         code: 'CC',
-        primaryColor: '#007700', // Зеленый
-        secondaryColor: '#000000', // Черный
-        formationYear: 2367,
+        primaryColor: '#00FF00',
+        secondaryColor: '#FFFF00',
+        formationYear: 2366,
         dissolutionYear: null,
-        description: 'The Capellan Confederation is one of the major Successor States of the Inner Sphere, ruled by House Liao. It is known for its authoritarian government, emphasis on the collective good, and highly trained elite forces.',
-        logoUrl: 'factions/logos/capellan-confederation.png',
-        bannerUrl: 'factions/banners/capellan-confederation.jpg',
+        description: 'Фракция, управляемая Домом Ляо. Известна своей политической интригой и разведывательными операциями.',
+        logoUrl: 'uploads/factions/logos/HouseLiaoLogo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -70,13 +70,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Free Worlds League',
         code: 'FWL',
-        primaryColor: '#800080', // Пурпурный
-        secondaryColor: '#FFD700', // Золотой
+        primaryColor: '#800080',
+        secondaryColor: '#FFFFFF',
         formationYear: 2271,
-        dissolutionYear: 3078,
-        description: 'The Free Worlds League was one of the major Successor States of the Inner Sphere until its dissolution during the Jihad. It was known for its industrial might and democratic traditions, though it suffered from internal political divisions.',
-        logoUrl: 'factions/logos/free-worlds-league.png',
-        bannerUrl: 'factions/banners/free-worlds-league.jpg',
+        dissolutionYear: null,
+        description: 'Демократическая конфедерация, управляемая Домом Марик. Известна своей торговой сетью и разнообразием.',
+        logoUrl: 'uploads/factions/logos/MaricLogo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -84,13 +84,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Lyran Commonwealth',
         code: 'LC',
-        primaryColor: '#1E90FF', // Синий
-        secondaryColor: '#FFFFFF', // Белый
+        primaryColor: '#0000FF',
+        secondaryColor: '#FFFFFF',
         formationYear: 2341,
-        dissolutionYear: 3084,
-        description: 'The Lyran Commonwealth was one of the major Successor States of the Inner Sphere, known for its commercial wealth, social mobility, and heavy military units.',
-        logoUrl: 'factions/logos/lyran-commonwealth.png',
-        bannerUrl: 'factions/banners/lyran-commonwealth.jpg',
+        dissolutionYear: null,
+        description: 'Фракция, управляемая Домом Штайнер. Известна своей экономической мощью и торговыми связями.',
+        logoUrl: 'uploads/factions/logos/Lyran Commonwealth Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -98,13 +98,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Lyran Alliance',
         code: 'LA',
-        primaryColor: '#1E90FF', // Синий
-        secondaryColor: '#C0C0C0', // Серебряный
-        formationYear: 3084,
+        primaryColor: '#0000FF',
+        secondaryColor: '#FFFFFF',
+        formationYear: 3057,
         dissolutionYear: null,
-        description: 'The successor state to the Lyran Commonwealth, the Lyran Alliance maintains the commercial powerhouse status of its predecessor while emphasizing a more independent identity.',
-        logoUrl: 'factions/logos/lyran-alliance.png',
-        bannerUrl: 'factions/banners/lyran-alliance.jpg',
+        description: 'Продолжение Lyran Commonwealth после объединения с Federated Commonwealth.',
+        logoUrl: 'uploads/factions/logos/Lyran Alliance Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -112,13 +112,13 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'ComStar',
         code: 'CS',
-        primaryColor: '#FFFFFF', // Белый
-        secondaryColor: '#000000', // Черный
-        formationYear: 2785,
+        primaryColor: '#FFFFFF',
+        secondaryColor: '#000000',
+        formationYear: 2788,
         dissolutionYear: null,
-        description: 'ComStar is an interstellar organization that maintains the hyperpulse generator (HPG) network, providing communication between star systems. Originally quasi-religious in nature, it later split into secular ComStar and the fanatical Word of Blake.',
-        logoUrl: 'factions/logos/comstar.png',
-        bannerUrl: 'factions/banners/comstar.jpg',
+        description: 'Нейтральная организация, контролирующая связь и технологии во Внутренней Сфере.',
+        logoUrl: 'uploads/factions/logos/ComStar Logo.jpg',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
@@ -126,99 +126,242 @@ export async function seedFactions(prismaClient: PrismaClient) {
       {
         name: 'Clan Wolf',
         code: 'CW',
-        primaryColor: '#C0C0C0', // Серебряный
-        secondaryColor: '#FF0000', // Красный
+        primaryColor: '#FFA500',
+        secondaryColor: '#000000',
         formationYear: 2807,
         dissolutionYear: null,
-        description: 'One of the original Clans founded by Nicholas Kerensky, Clan Wolf is named after the Timber Wolf (Canis lupus). They are known for their pragmatism and adaptability compared to other Clans.',
-        logoUrl: 'factions/logos/clan-wolf.png',
-        bannerUrl: 'factions/banners/clan-wolf.jpg',
-        gameIdRef: trenchCrusadeGame.id,
+        description: 'Один из самых могущественных кланов, известный своей военной традицией и честью.',
+        logoUrl: 'uploads/factions/logos/Clan Wolf Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
       },
       {
         name: 'Clan Jade Falcon',
         code: 'CJF',
-        primaryColor: '#006400', // Темно-зеленый
-        secondaryColor: '#FFD700', // Золотой
+        primaryColor: '#00FF00',
+        secondaryColor: '#000000',
         formationYear: 2807,
         dissolutionYear: null,
-        description: 'One of the original Clans founded by Nicholas Kerensky, Clan Jade Falcon is known for their strict adherence to Clan ways and their particular rivalry with Clan Wolf.',
-        logoUrl: 'factions/logos/clan-jade-falcon.png',
-        bannerUrl: 'factions/banners/clan-jade-falcon.jpg',
-        gameIdRef: trenchCrusadeGame.id,
+        description: 'Клан, известный своей агрессивностью и строгим следованием традициям кланов.',
+        logoUrl: 'uploads/factions/logos/Clan Jade Falcon Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
       },
       {
         name: 'Clan Ghost Bear',
         code: 'CGB',
-        primaryColor: '#4682B4', // Стальной синий
-        secondaryColor: '#FFFFFF', // Белый
+        primaryColor: '#8B4513',
+        secondaryColor: '#FFFFFF',
         formationYear: 2807,
         dissolutionYear: null,
-        description: 'One of the original Clans founded by Nicholas Kerensky, Clan Ghost Bear is known for their strength, perseverance, and strong family bonds, unusual among the Clans.',
-        logoUrl: 'factions/logos/clan-ghost-bear.png',
-        bannerUrl: 'factions/banners/clan-ghost-bear.jpg',
-        gameIdRef: trenchCrusadeGame.id,
-        isMajor: true,
-        isActive: true,
-      },
-      {
-        name: "Wolf's Dragoons",
-        code: 'WD',
-        primaryColor: '#000000', // Черный
-        secondaryColor: '#FF0000', // Красный
-        formationYear: 3000,
-        dissolutionYear: null,
-        description: "Wolf's Dragoons is an elite mercenary unit with secret ties to Clan Wolf, sent to the Inner Sphere as an advance reconnaissance unit before the Clan invasion.",
-        logoUrl: 'factions/logos/wolfs-dragoons.png',
-        bannerUrl: 'factions/banners/wolfs-dragoons.jpg',
+        description: 'Клан, известный своей семейной традицией и защитой своих территорий.',
+        logoUrl: 'uploads/factions/logos/GhostBearLogo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
-        isMajor: false,
+        isMajor: true,
         isActive: true,
       },
       {
         name: 'Kell Hounds',
         code: 'KH',
-        primaryColor: '#006400', // Темно-зеленый
-        secondaryColor: '#C0C0C0', // Серебряный
-        formationYear: 3010,
+        primaryColor: '#FF0000',
+        secondaryColor: '#000000',
+        formationYear: 3007,
         dissolutionYear: null,
-        description: 'The Kell Hounds are an elite mercenary unit founded by Morgan and Patrick Kell with close ties to House Steiner and the Federated Suns.',
-        logoUrl: 'factions/logos/kell-hounds.png',
-        bannerUrl: 'factions/banners/kell-hounds.jpg',
+        description: 'Известная наемная команда, основанная Морганом и Патриком Келл.',
+        logoUrl: 'uploads/factions/logos/imagesKH.jpg',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
-        isMajor: false,
+        isMajor: true,
+        isActive: true,
+      },
+      {
+        name: 'Wolf\'s Dragoons',
+        code: 'WD',
+        primaryColor: '#8B0000',
+        secondaryColor: '#000000',
+        formationYear: 3005,
+        dissolutionYear: null,
+        description: 'Легендарная наемная команда, известная своей преданностью и военным мастерством. Основана Джейми Вулфом.',
+        logoUrl: 'uploads/factions/logos/Wolf`s Dragoons Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: true,
         isActive: true,
       },
       {
         name: 'Word of Blake',
-        code: 'WOB',
-        primaryColor: '#FFFFFF', // Белый
-        secondaryColor: '#800080', // Пурпурный
+        code: 'WoB',
+        primaryColor: '#000000',
+        secondaryColor: '#FFFFFF',
         formationYear: 3052,
-        dissolutionYear: 3081,
-        description: 'A radical splinter faction of ComStar, the Word of Blake held to the mystical and religious aspects of ComStar. They were responsible for the Jihad, a massive interstellar conflict.',
-        logoUrl: 'factions/logos/word-of-blake.png',
-        bannerUrl: 'factions/banners/word-of-blake.jpg',
+        dissolutionYear: null,
+        description: 'Радикальная фракция ComStar, известная своей религиозной фанатичностью.',
+        logoUrl: 'uploads/factions/logos/Word Of Blake Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
       },
       {
         name: 'Republic of the Sphere',
-        code: 'ROS',
-        primaryColor: '#4682B4', // Стальной синий
-        secondaryColor: '#FFFFFF', // Белый
+        code: 'RoS',
+        primaryColor: '#FFD700',
+        secondaryColor: '#000080',
         formationYear: 3081,
         dissolutionYear: null,
-        description: 'The Republic of the Sphere was established after the Jihad, centered on Terra and nearby worlds. It aimed to be a new power promoting peace and cooperation between the Inner Sphere and the Clans.',
-        logoUrl: 'factions/logos/republic-of-the-sphere.png',
-        bannerUrl: 'factions/banners/republic-of-the-sphere.jpg',
+        description: 'Новая фракция, возникшая после событий Jihad.',
+        logoUrl: 'uploads/factions/logos/Republic Of The Sphere Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
         gameIdRef: battletechGame.id,
         isMajor: true,
+        isActive: true,
+      },
+
+          {
+        name: 'Rasalhague Republic',
+        code: 'RR',
+        primaryColor: '#0066CC',
+        secondaryColor: '#FFFFFF',
+        formationYear: 3034,
+        dissolutionYear: 3135,
+        description: 'Независимое государство, созданное при поддержке ComStar и Lyran Commonwealth. Известно своей скандинавской культурой и борьбой за независимость.',
+        logoUrl: 'uploads/factions/logos/Rasalhague Republic Logo.jpg',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: true,
+        isActive: false,
+      },
+      {
+        name: 'Rasalhague Dominion',
+        code: 'RD',
+        primaryColor: '#0066CC',
+        secondaryColor: '#FF0000',
+        formationYear: 3135,
+        dissolutionYear: null,
+        description: 'Государство, образованное в результате объединения остатков Rasalhague Republic и Clan Ghost Bear. Сочетает традиции Скандинавии и клановую культуру.',
+        logoUrl: 'uploads/factions/logos/Rasalhague Dominion Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: true,
+        isActive: true,
+      },
+
+        {
+        name: 'Mercenaries',
+        code: 'MERC',
+        primaryColor: '#808080',
+        secondaryColor: '#FFD700',
+        formationYear: 2300, // Условно — наёмники существуют с начала эпохи войн
+        dissolutionYear: null,
+        description: 'Разношёрстные наёмные отряды, продающие свои услуги домам, корпорациям или кланам.',
+        logoUrl: 'uploads/factions/logos/MRBC.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: true, 
+        isActive: true,
+      },
+        {
+        name: 'Clan Hell\'s Horses',
+        code: 'HH',
+        primaryColor: '#8B0000', // Тёмно-красный
+        secondaryColor: '#FFD700', // Золотой
+        formationYear: 2807, // Основан во время Кланового Исхода
+        dissolutionYear: null,
+        description: 'Агрессивный клан, делающий ставку на комбинированные удары боевых машин и пехоты. Известен тактикой "бронированного кулака" и пренебрежением к традиционным клановым дуэлям.',
+        logoUrl: 'uploads/factions/logos/Clan Hells Horses.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: true,
+        isActive: true,
+      },
+
+            {
+        name: 'The Holy Order',
+        code: 'HO',
+        primaryColor: '#C0C0C0', // Серебряный — символ веры и чистоты
+        secondaryColor: '#800000', // Тёмно-красный — кровь мучеников
+        formationYear: 1243, // Условная дата основания ордена
+        dissolutionYear: null,
+        description: 'Воинственный орден, объединяющий фанатиков-крестоносцев. Их догмы требуют искоренения ереси огнём и мечом. Используют древние реликвии и тяжёлые доспехи.',
+        logoUrl: 'uploads/factions/logos/temp.jpg',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: trenchCrusadeGame.id, 
+        isMajor: false,
+        isActive: true,
+      },
+            {
+        name: 'The Apostates',
+        code: 'APOS',
+        primaryColor: '#5E1914', // Тёмно-бордовый — цвет запёкшейся крови
+        secondaryColor: '#000000', // Чёрный — тайные знания
+        formationYear: null, // Не имеют точной даты, возникли стихийно
+        dissolutionYear: null,
+        description: 'Разрозненные культы, поклоняющиеся запретным богам и демонам. Их тактика — партизанская война, подкуп и тёмные ритуалы. Объединяет их лишь ненависть к Ордену.',
+        logoUrl: 'uploads/factions/logos/temp.jpg',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: trenchCrusadeGame.id,
+        isMajor: false,
+        isActive: true,
+      },
+          {
+        name: 'The Iron Pact',
+        code: 'IRON',
+        primaryColor: '#3A3A3A', // Цвет ржавого металла
+        secondaryColor: '#8B0000', // Кроваво-красный — жестокость
+        formationYear: 1459, // Условная дата "восстания машин"
+        dissolutionYear: null,
+        description: 'Осколки древних технократических культов, слившиеся с бандитами и мутантами. Используют уродливые механические гибриды и запретное оружие. Презирают и Орден, и еретиков.',
+        logoUrl: 'uploads/factions/logos/temp.jpg',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: trenchCrusadeGame.id,
+        isMajor: false,
+        isActive: true,
+      },
+            {
+        name: '2nd Legion of Vega',
+        code: '2LV',
+        primaryColor: '#C0C0C0', // Светло-серый — цвет "изгоев"
+        secondaryColor: '#8B0000', // Тёмно-красный — скрытая ярость
+        formationYear: 3025, // Реформа после 4-й Усперимской войны
+        dissolutionYear: null,
+        description: 'Позорное подразделение DCMS, куда ссылают провинившихся самураев. Несмотря на репутацию "отбросов", после 3039 года показали удивительную стойкость.',
+        logoUrl: 'uploads/factions/logos/2nd Legion of Vega Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: false, // Не главная фракция, но культовая
+        isActive: true,
+      },
+            {
+        name: '4th Sword of Light',
+        code: '4SOL',
+        primaryColor: '#FF0000', // Ярко-красный — цвет Дракона
+        secondaryColor: '#000000',
+        formationYear: 2319, // Основаны при создании DCMS
+        dissolutionYear: null,
+        description: 'Одно из старейших и самых престижных подразделений DCMS. Прославились жестокостью в рейдах на Лайранское Содружество. Уничтожены в 3050-х, но позже восстановлены.',
+        logoUrl: 'uploads/factions/logos/4th Sword of Light Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: false, // Часть DCMS, но не отдельная фракция
+        isActive: true,
+      },
+            {
+        name: 'Omega Galaxy (Clan Hell\'s Horses)',
+        code: 'OMG-HH', // или "CHH-Omega"
+        primaryColor: '#8B0000', // Тёмно-красный клана
+        secondaryColor: '#000000', // Чёрный для "теневого" статуса
+        formationYear: 3061, // Создана во время Войны Теней
+        dissolutionYear: null,
+        description: 'Элитная галактика Clan Hell\'s Horses, специализирующаяся на прорывах через укреплённые линии. Известна операцией "Теневой Проход" во время Войны Теней.',
+        logoUrl: 'uploads/factions/logos/Omega Galaxy (Clan Hell\'s Horses) Logo.png',
+        bannerUrl: 'factions/banners/temp.jpg',
+        gameIdRef: battletechGame.id,
+        isMajor: false, // Галактика — часть клана, не отдельная фракция
         isActive: true,
       },
     ];
