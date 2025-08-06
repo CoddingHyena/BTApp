@@ -87,6 +87,7 @@ export const checkAuth = createAsyncThunk(
       const user = JSON.parse(userStr);
       return { user, token };
     } catch (error) {
+      console.log('Token verification failed:', error);
       // Если токен недействителен, очищаем localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('user');

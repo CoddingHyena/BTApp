@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Form, Button, Card, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import { useCreateGameMutation, useUpdateGameMutation } from '../store/api/apiSlice';
+import { useCreateGameMutation, useUpdateGameMutation, useUploadGameIconMutation, useUploadGameBannerMutation } from '../store/api/apiSlice';
 import { CreateGameDto, UpdateGameDto, Game, GameCategory } from '../types/game';
+import UniversalImageUpload from './UniversalImageUpload';
 
 interface GameFormProps {
   game?: Game;
@@ -24,6 +25,8 @@ const GameForm: React.FC<GameFormProps> = ({ game, onSuccess, onCancel }) => {
 
   const [createGame, { isLoading: isCreating, error: createError }] = useCreateGameMutation();
   const [updateGame, { isLoading: isUpdating, error: updateError }] = useUpdateGameMutation();
+  const [uploadIcon] = useUploadGameIconMutation();
+  const [uploadBanner] = useUploadGameBannerMutation();
 
   const isLoading = isCreating || isUpdating;
   const error = createError || updateError;
@@ -55,6 +58,14 @@ const GameForm: React.FC<GameFormProps> = ({ game, onSuccess, onCancel }) => {
                type === 'number' ? Number(value) : 
                value,
     }));
+  };
+
+  const handleIconUpload = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, iconUrl: imageUrl }));
+  };
+
+  const handleBannerUpload = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, bannerUrl: imageUrl }));
   };
 
   return (
@@ -128,30 +139,25 @@ const GameForm: React.FC<GameFormProps> = ({ game, onSuccess, onCancel }) => {
             />
           </Form.Group>
 
+          {/* Загрузка изображений */}
           <Row>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Icon URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="iconUrl"
-                  value={formData.iconUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/icon.png"
-                />
-              </Form.Group>
+              <UniversalImageUpload
+                uploadFunction={uploadIcon}
+                uploadType="game-icon"
+                onImageUploaded={handleIconUpload}
+                currentImageUrl={formData.iconUrl}
+                label="Иконка игры"
+              />
             </Col>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Banner URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="bannerUrl"
-                  value={formData.bannerUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/banner.jpg"
-                />
-              </Form.Group>
+              <UniversalImageUpload
+                uploadFunction={uploadBanner}
+                uploadType="game-banner"
+                onImageUploaded={handleBannerUpload}
+                currentImageUrl={formData.bannerUrl}
+                label="Баннер игры"
+              />
             </Col>
           </Row>
 

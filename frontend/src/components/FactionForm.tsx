@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import { useCreateFactionMutation, useUpdateFactionMutation, useGetGamesQuery } from '../store/api/apiSlice';
+import { useCreateFactionMutation, useUpdateFactionMutation, useGetGamesQuery, useUploadFactionLogoMutation } from '../store/api/apiSlice';
 import { CreateFactionDto, UpdateFactionDto, Faction } from '../types/faction';
 import { Game } from '../types/game';
+import UniversalImageUpload from './UniversalImageUpload';
 
 interface FactionFormProps {
   faction?: Faction;
   onSuccess?: () => void;
   onCancel?: () => void;
+  onImageUploaded?: () => void; // Добавляем callback для обновления данных
 }
 
-const FactionForm: React.FC<FactionFormProps> = ({ faction, onSuccess, onCancel }) => {
+const FactionForm: React.FC<FactionFormProps> = ({ faction, onSuccess, onCancel, onImageUploaded }) => {
   const isEditing = !!faction;
   
   const [formData, setFormData] = useState<CreateFactionDto>({
@@ -30,10 +32,20 @@ const FactionForm: React.FC<FactionFormProps> = ({ faction, onSuccess, onCancel 
 
   const [createFaction, { isLoading: isCreating, error: createError }] = useCreateFactionMutation();
   const [updateFaction, { isLoading: isUpdating, error: updateError }] = useUpdateFactionMutation();
+  const [uploadLogo] = useUploadFactionLogoMutation();
   const { data: games } = useGetGamesQuery();
 
   const isLoading = isCreating || isUpdating;
   const error = createError || updateError;
+
+  // Обертываем RTK Query мутации в правильные функции
+  const uploadLogoFunction = async (formData: FormData) => {
+    if (!faction?.id) {
+      throw new Error('Faction ID is required for logo upload');
+    }
+    const result = await uploadLogo(formData).unwrap();
+    return result;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +72,28 @@ const FactionForm: React.FC<FactionFormProps> = ({ faction, onSuccess, onCancel 
                type === 'number' ? Number(value) : 
                value,
     }));
+  };
+
+  const handleLogoUpload = async (imageUrl: string) => {
+    console.log('handleLogoUpload called with URL:', imageUrl);
+    
+    // Обновляем состояние формы
+    const updatedFormData = { ...formData, logoUrl: imageUrl };
+    setFormData(updatedFormData);
+    console.log('Updated formData:', updatedFormData);
+    
+    // Автоматически сохраняем изменения если редактируем существующую фракцию
+    if (isEditing && faction) {
+      try {
+        await updateFaction({ id: faction.id, ...updatedFormData }).unwrap();
+        console.log('Faction updated automatically after logo upload');
+      } catch (err) {
+        console.error('Error auto-saving faction after logo upload:', err);
+      }
+    }
+    
+    // Вызываем callback для обновления данных
+    onImageUploaded?.();
   };
 
   return (
@@ -170,30 +204,16 @@ const FactionForm: React.FC<FactionFormProps> = ({ faction, onSuccess, onCancel 
             />
           </Form.Group>
 
+          {/* Загрузка логотипа */}
           <Row>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Logo URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="logoUrl"
-                  value={formData.logoUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/logo.png"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Banner URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="bannerUrl"
-                  value={formData.bannerUrl}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/banner.jpg"
-                />
-              </Form.Group>
+              <UniversalImageUpload
+                uploadFunction={uploadLogoFunction}
+                uploadType="faction-logo"
+                onImageUploaded={handleLogoUpload}
+                currentImageUrl={formData.logoUrl}
+                label="Логотип фракции"
+              />
             </Col>
           </Row>
 

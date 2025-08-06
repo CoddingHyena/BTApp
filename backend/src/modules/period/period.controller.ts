@@ -17,10 +17,7 @@ export class PeriodController {
     return this.periodService.findAll();
   }
 
-  @Get('active')
-  async findActive(): Promise<Period[]> {
-    return this.periodService.findActive();
-  }
+
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Period> {

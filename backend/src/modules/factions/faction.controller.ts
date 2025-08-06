@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger } from '@nestjs/common';
 import { FactionService } from './faction.service';
 import { CreateFactionDto } from './dto/create-faction.dto';
 import { UpdateFactionDto } from './dto/update-faction.dto';
@@ -9,6 +9,8 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 
 @Controller('factions')
 export class FactionController {
+  private readonly logger = new Logger(FactionController.name);
+  
   constructor(private readonly factionService: FactionService) {}
 
   @Get()
@@ -50,6 +52,7 @@ export class FactionController {
     @Param('id') id: string,
     @Body() updateFactionDto: UpdateFactionDto,
   ): Promise<Faction> {
+    this.logger.log(`Updating faction with ID: ${id}`);
     return this.factionService.update(+id, updateFactionDto);
   }
 

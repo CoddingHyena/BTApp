@@ -7,6 +7,7 @@ import {
   setPeriods,
   selectPeriodsStatus
 } from '../store/slices/periodSlice';
+import { getImageUrl } from '../config/api';
 
 const PeriodListPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ const PeriodListPage: React.FC = () => {
   // Update periods in the store when data is loaded
   useEffect(() => {
     if (periods) {
+      console.log('Periods loaded from API:', periods);
       dispatch(setPeriods(periods));
     }
   }, [periods, dispatch]);
@@ -164,16 +166,44 @@ const PeriodListPage: React.FC = () => {
               {period.bannerUrl && (
                 <Card.Img 
                   variant="top" 
-                  src={period.bannerUrl}
+                  src={getImageUrl(period.bannerUrl)}
                   alt={`${period.name} era banner`}
                   style={{ height: '140px', objectFit: 'cover' }}
+                  onError={(e) => {
+                    console.error('Failed to load banner:', period.bannerUrl);
+                    console.error('Full banner URL:', getImageUrl(period.bannerUrl || ''));
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  onLoad={() => {
+                    console.log('Banner loaded successfully:', period.bannerUrl);
+                  }}
                 />
               )}
               <Card.Body>
-                <Card.Title>{period.name}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">
-                  {period.startYear} - {period.endYear}
-                </Card.Subtitle>
+                <div className="d-flex align-items-center mb-3">
+                  {period.imageUrl && (
+                    <img 
+                      src={getImageUrl(period.imageUrl)} 
+                      alt={`${period.name} icon`}
+                      className="me-3"
+                      style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                      onError={(e) => {
+                        console.error('Failed to load icon:', period.imageUrl);
+                        console.error('Full icon URL:', getImageUrl(period.imageUrl || ''));
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        console.log('Icon loaded successfully:', period.imageUrl);
+                      }}
+                    />
+                  )}
+                  <div>
+                    <Card.Title>{period.name}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">
+                      {period.startYear} - {period.endYear}
+                    </Card.Subtitle>
+                  </div>
+                </div>
                 <Card.Text>{period.description}</Card.Text>
               </Card.Body>
               <Card.Footer className="text-muted">

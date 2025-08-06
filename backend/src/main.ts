@@ -18,33 +18,28 @@ async function bootstrap() {
   const periodsImagesDir = join(uploadsDir, 'periods');
   const periodsBannersDir = join(uploadsDir, 'periods', 'banners');
   const factionsImagesDir = join(uploadsDir, 'factions');
-  const factionsBannersDir = join(uploadsDir, 'factions', 'logos');
+  const factionsLogosDir = join(uploadsDir, 'factions', 'logos');
+  const factionsBannersDir = join(uploadsDir, 'factions', 'banners');
   const missionsImagesDir = join(uploadsDir, 'missions');
+  const gamesIconsDir = join(uploadsDir, 'games', 'icons');
+  const gamesBannersDir = join(uploadsDir, 'games', 'banners');
   
-   [uploadsDir, periodsImagesDir, periodsBannersDir, factionsImagesDir, factionsBannersDir, missionsImagesDir].forEach(dir => {
+   [uploadsDir, periodsImagesDir, periodsBannersDir, factionsImagesDir, factionsLogosDir, factionsBannersDir, missionsImagesDir, gamesIconsDir, gamesBannersDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
   });
   
   // Настройка статических файлов - добавляем возможность доступа к публичным файлам
-  app.useStaticAssets(join(process.cwd(), 'public'), {
-    prefix: '/uploads/',
-  });
+  const publicPath = join(process.cwd(), 'public');
+  const uploadsPath = join(publicPath, 'uploads');
+  console.log('Static assets path:', publicPath);
+  console.log('Static assets exists:', fs.existsSync(publicPath));
+  console.log('Uploads path:', uploadsPath);
+  console.log('Uploads exists:', fs.existsSync(uploadsPath));
   
-  // Дополнительная настройка для прямого доступа к файлам
-  app.use('/uploads', (req, res, next) => {
-    // Ищем файл в папке public/uploads (правильный путь)
-    const filePath = join(process.cwd(), 'public', 'uploads', req.url);
-    console.log(`Static file request: ${req.url} -> ${filePath}`);
-    console.log(`File exists: ${fs.existsSync(filePath)}`);
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      console.log(`File not found: ${filePath}`);
-      next();
-    }
-  });
+  // Настройка статических файлов - раздаем всю папку public
+  app.useStaticAssets(publicPath);
   
   // Настройка Swagger
   const config = new DocumentBuilder()

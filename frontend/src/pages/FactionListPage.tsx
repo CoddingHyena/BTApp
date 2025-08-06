@@ -1,92 +1,58 @@
-import React, { useEffect } from 'react';
-import { Container, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
-import { useGetFactionsQuery } from '../store/api/apiSlice';
-import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
-import {
-  selectAllFactions,
-  setFactions,
-  selectFactionsStatus
-} from '../store/slices/factionSlice';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Spinner, Alert, Form } from 'react-bootstrap';
+import { useGetFactionsQuery, useGetGamesQuery } from '../store/api/apiSlice';
+import { Faction } from '../types/faction';
+import FactionCard from '../components/FactionCard';
 
 const FactionListPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  
-  // Get factions from RTK Query
-  const {
-    data: factions,
-    isLoading,
-    isError,
-    error
-  } = useGetFactionsQuery();
-  
-  // Get factions from Redux store
-  const storedFactions = useAppSelector(selectAllFactions);
-  const status = useAppSelector(selectFactionsStatus);
-  
-  // Update factions in the store when data is loaded
+  const { data: factions, isLoading, isError, error, status } = useGetFactionsQuery();
+  const { data: games } = useGetGamesQuery();
+  const [storedFactions, setStoredFactions] = useState<Faction[]>([]);
+  const [majorFilter, setMajorFilter] = useState<string>('all'); // 'all', 'major', 'minor'
+  const [gameFilter, setGameFilter] = useState<string>('all'); // 'all', 'battletech', 'trench-crusade'
+
   useEffect(() => {
-    if (factions) {
-      dispatch(setFactions(factions));
-    }
-  }, [factions, dispatch]);
-  
-  // Временное решение: моковые данные для разработки, пока API не готов
-  useEffect(() => {
-    if (isError && import.meta.env.DEV) {
-      console.log('Using mock faction data for development');
-      const mockFactions = [
-        {
-          id: '1',
-          name: 'Federated Suns',
-          code: 'FS',
-          primaryColor: '#FFD700',
-          secondaryColor: '#8B0000',
-          formationYear: 2317,
-          description: 'The Federated Suns is one of the major Successor States of the Inner Sphere.',
-          logoUrl: '/factions/fs-logo.png',
-          bannerUrl: '/factions/fs-banner.jpg'
-        },
-        {
-          id: '2',
-          name: 'Clan Wolf',
-          code: 'CW',
-          primaryColor: '#708090',
-          secondaryColor: '#FF4500',
-          formationYear: 2807,
-          description: 'Clan Wolf was one of the original twenty Clans founded by Nicholas Kerensky.',
-          logoUrl: '/factions/cw-logo.png',
-          bannerUrl: '/factions/cw-banner.jpg'
-        },
-        {
-          id: '3',
-          name: 'Capellan Confederation',
-          code: 'CC',
-          primaryColor: '#006400',
-          secondaryColor: '#B22222',
-          formationYear: 2367,
-          description: 'The Capellan Confederation is the smallest of the five major Successor States of the Inner Sphere.',
-          logoUrl: '/factions/cc-logo.png',
-          bannerUrl: '/factions/cc-banner.jpg'
-        },
-        {
-          id: '4',
-          name: 'ComStar',
-          code: 'CS',
-          primaryColor: '#FFFFFF',
-          secondaryColor: '#000000',
-          formationYear: 2785,
-          description: 'ComStar is an interstellar communications, information, and technology organization.',
-          logoUrl: '/factions/cs-logo.png',
-          bannerUrl: '/factions/cs-banner.jpg'
+    if (factions && games) {
+      let filteredFactions = factions;
+      
+      // Применяем фильтр по типу фракции
+      if (majorFilter === 'major') {
+        filteredFactions = factions.filter(faction => faction.isMajor);
+      } else if (majorFilter === 'minor') {
+        filteredFactions = factions.filter(faction => !faction.isMajor);
+      }
+      
+      // Применяем фильтр по игре
+      if (gameFilter === 'battletech') {
+        const battletechGame = games.find(game => game.name === 'Battletech');
+        if (battletechGame) {
+          filteredFactions = filteredFactions.filter(faction => 
+            faction.gameIdRef === battletechGame.id
+          );
         }
-      ];
-      dispatch(setFactions(mockFactions));
+      } else if (gameFilter === 'trench-crusade') {
+        const trenchCrusadeGame = games.find(game => game.name === 'Trench Crusade');
+        if (trenchCrusadeGame) {
+          filteredFactions = filteredFactions.filter(faction => 
+            faction.gameIdRef === trenchCrusadeGame.id
+          );
+        }
+      }
+      
+      setStoredFactions(filteredFactions);
     }
-  }, [isError, dispatch]);
-  
-  // Display factions from the store, or show loading/error states
+  }, [factions, games, majorFilter, gameFilter]);
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMajorFilter(e.target.value);
+  };
+
+  const handleGameFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setGameFilter(e.target.value);
+  };
+
   const renderContent = () => {
-    if (isLoading && status === 'loading') {
+    if (isLoading) {
       return (
         <div className="text-center my-5">
           <Spinner animation="border" role="status">
@@ -96,10 +62,10 @@ const FactionListPage: React.FC = () => {
       );
     }
     
-    if (isError && status === 'failed' && storedFactions.length === 0) {
+    if (isError && storedFactions.length === 0) {
       return (
         <Alert variant="danger">
-          Error loading factions: {error instanceof Error ? error.message : 'Unknown error'}
+          Error loading factions: {error?.toString() || 'Unknown error'}
         </Alert>
       );
     }
@@ -116,55 +82,7 @@ const FactionListPage: React.FC = () => {
       <Row xs={1} md={2} lg={3} className="g-4">
         {storedFactions.map((faction) => (
           <Col key={faction.id}>
-            <Card className="h-100 faction-card">
-              {faction.bannerUrl && (
-                <Card.Img 
-                  variant="top" 
-                  src={faction.bannerUrl}
-                  alt={`${faction.name} banner`}
-                  style={{ height: '140px', objectFit: 'cover' }}
-                />
-              )}
-              <Card.Body>
-                <div className="d-flex align-items-center mb-3">
-                  {faction.logoUrl && (
-                    <img 
-                      src={faction.logoUrl} 
-                      alt={`${faction.name} logo`}
-                      className="me-3"
-                      style={{ width: '40px', height: '40px' }}
-                    />
-                  )}
-                  <Card.Title>{faction.name}</Card.Title>
-                </div>
-                <Card.Subtitle className="mb-2 text-muted">{faction.code}</Card.Subtitle>
-                <Card.Text>{faction.description}</Card.Text>
-                <div className="faction-colors d-flex mb-2">
-                  <div 
-                    className="color-box me-2" 
-                    style={{
-                      backgroundColor: faction.primaryColor,
-                      width: '20px',
-                      height: '20px',
-                      border: '1px solid #ddd'
-                    }}
-                  />
-                  <div 
-                    className="color-box" 
-                    style={{
-                      backgroundColor: faction.secondaryColor,
-                      width: '20px',
-                      height: '20px',
-                      border: '1px solid #ddd'
-                    }}
-                  />
-                </div>
-              </Card.Body>
-              <Card.Footer className="text-muted">
-                Formed: {faction.formationYear}
-                {faction.dissolutionYear && ` - Dissolved: ${faction.dissolutionYear}`}
-              </Card.Footer>
-            </Card>
+            <FactionCard faction={faction} />
           </Col>
         ))}
       </Row>
@@ -178,6 +96,38 @@ const FactionListPage: React.FC = () => {
         The BattleTech universe is populated by numerous factions vying for power, 
         resources, and territory across the stars.
       </p>
+      
+      {/* Фильтр по типу фракции */}
+      <div className="mb-4">
+        <Row>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>Filter by Faction Type</Form.Label>
+              <Form.Select 
+                value={majorFilter} 
+                onChange={handleFilterChange}
+              >
+                <option value="all">Все фракции</option>
+                <option value="major">Ведущие Фракции</option>
+                <option value="minor">Подфракция</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>Filter by Game</Form.Label>
+              <Form.Select 
+                value={gameFilter} 
+                onChange={handleGameFilterChange}
+              >
+                <option value="all">Все игры</option>
+                <option value="battletech">Battletech</option>
+                <option value="trench-crusade">Trench Crusade</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+      </div>
       
       {renderContent()}
     </Container>

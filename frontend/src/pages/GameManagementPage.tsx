@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Alert, Modal, Spinner, Badge } from 
 import { useGetGamesQuery, useDeleteGameMutation } from '../store/api/apiSlice';
 import GameForm from '../components/GameForm';
 import { Game } from '../types/game';
+import { getImageUrl } from '../config/api';
 
 const GameManagementPage: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -41,63 +42,94 @@ const GameManagementPage: React.FC = () => {
     }
   };
   
-  const renderGameCard = (game: Game) => (
-    <Col key={game.id} xs={12} md={6} lg={4}>
-      <Card className="h-100 game-card">
-        {game.bannerUrl && (
-          <Card.Img 
-            variant="top" 
-            src={game.bannerUrl}
-            alt={`${game.name} banner`}
-            style={{ height: '140px', objectFit: 'cover' }}
-          />
-        )}
-        <Card.Body>
-          <div className="d-flex align-items-center mb-3">
-            {game.iconUrl && (
-              <img 
-                src={game.iconUrl} 
-                alt={`${game.name} icon`}
-                className="me-3"
-                style={{ width: '40px', height: '40px' }}
-              />
-            )}
-            <Card.Title>{game.name}</Card.Title>
-          </div>
-          <Card.Text>{game.description}</Card.Text>
-          <div className="mb-2">
-            <Badge bg="info" className="me-2">
-              {game.category}
-            </Badge>
-            <Badge bg={game.isActive ? 'success' : 'danger'}>
-              {game.isActive ? 'Active' : 'Inactive'}
-            </Badge>
-          </div>
-          <div className="text-muted small">
-            Sort Order: {game.sortOrder}
-          </div>
-        </Card.Body>
-        <Card.Footer>
-          <div className="d-flex gap-2">
-            <Button 
-              variant="outline-primary" 
-              size="sm"
-              onClick={() => setEditingGame(game)}
-            >
-              Edit
-            </Button>
-            <Button 
-              variant="outline-danger" 
-              size="sm"
-              onClick={() => setDeletingGame(game)}
-            >
-              Delete
-            </Button>
-          </div>
-        </Card.Footer>
-      </Card>
-    </Col>
-  );
+  const renderGameCard = (game: Game) => {
+    console.log('Rendering game card:', {
+      name: game.name,
+      bannerUrl: game.bannerUrl,
+      fullBannerUrl: game.bannerUrl ? getImageUrl(game.bannerUrl) : '',
+      iconUrl: game.iconUrl,
+      fullIconUrl: game.iconUrl ? getImageUrl(game.iconUrl) : ''
+    });
+    
+    return (
+      <Col key={game.id} xs={12} md={6} lg={6}>
+        <Card className="h-100 game-card">
+          {game.bannerUrl && (
+            <Card.Img 
+              variant="top" 
+              src={getImageUrl(game.bannerUrl)}
+              alt={`${game.name} banner`}
+              style={{ 
+                height: '161px', 
+                objectFit: game.name === 'Trench Crusade' ? 'contain' : 'cover',
+                backgroundColor: game.name === 'Trench Crusade' ? '#f8f9fa' : 'transparent',
+                padding: game.name === 'Trench Crusade' ? '10px' : '0'
+              }}
+              onError={(e) => {
+                console.error('Failed to load banner:', game.bannerUrl);
+                console.error('Full banner URL:', getImageUrl(game.bannerUrl || ''));
+                e.currentTarget.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log('Banner loaded successfully:', game.bannerUrl);
+              }}
+            />
+          )}
+          <Card.Body>
+            <div className="d-flex align-items-center mb-3">
+              {game.iconUrl && (
+                <img 
+                  src={getImageUrl(game.iconUrl)} 
+                  alt={`${game.name} icon`}
+                  className="me-3"
+                  style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                  onError={(e) => {
+                    console.error('Failed to load icon:', game.iconUrl);
+                    console.error('Full icon URL:', getImageUrl(game.iconUrl || ''));
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  onLoad={() => {
+                    console.log('Icon loaded successfully:', game.iconUrl);
+                  }}
+                />
+              )}
+              <Card.Title>{game.name}</Card.Title>
+            </div>
+            <Card.Text>{game.description}</Card.Text>
+            <div className="mb-2">
+              <Badge bg="info" className="me-2">
+                {game.category}
+              </Badge>
+              <Badge bg={game.isActive ? 'success' : 'danger'}>
+                {game.isActive ? 'Active' : 'Inactive'}
+              </Badge>
+            </div>
+            <div className="text-muted small">
+              Sort Order: {game.sortOrder}
+            </div>
+          </Card.Body>
+          <Card.Footer>
+            <div className="d-flex gap-2">
+              <Button 
+                variant="outline-primary" 
+                size="sm"
+                onClick={() => setEditingGame(game)}
+              >
+                Edit
+              </Button>
+              <Button 
+                variant="outline-danger" 
+                size="sm"
+                onClick={() => setDeletingGame(game)}
+              >
+                Delete
+              </Button>
+            </div>
+          </Card.Footer>
+        </Card>
+      </Col>
+    );
+  };
   
   const renderContent = () => {
     if (isLoading) {

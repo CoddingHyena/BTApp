@@ -3,9 +3,5 @@ Back:  npm run start:dev
 Front:  npm run dev
 auth: npm run start:dev
 
-"db:restart": npm run db:reset && npm run db:generate && npm run db:seed
-Prisma: npx prisma db seed
-Period seed: ts-node prisma/seeds/period.seeds.ts
-Faction seed: ts-node prisma/seeds/faction.seeds.ts
-Availability seed: ts-node prisma/seeds/mech-availability.seeds.ts
+"db:restart": npm run db:restart
 

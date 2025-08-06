@@ -326,6 +326,54 @@ export const apiSlice = createApi({
         body: formData,
       }),
     }),
+
+    // Faction image upload endpoints
+    uploadFactionLogo: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/factions/upload/logo',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+    uploadFactionBanner: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/factions/upload/banner',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+
+    // Period image upload endpoints
+    uploadPeriodImage: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/periods/upload/image',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+    uploadPeriodBanner: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/periods/upload/banner',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+
+    // Game image upload endpoints
+    uploadGameIcon: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/games/upload/icon',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+    uploadGameBanner: builder.mutation<{ success: boolean; filename: string; url: string; message: string }, FormData>({
+      query: (formData) => ({
+        url: '/games/upload/banner',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
   }),
 });
 
@@ -371,4 +419,10 @@ export const {
   useUpdateMissionMutation,
   useDeleteMissionMutation,
   useUploadMissionImageMutation,
+  useUploadFactionLogoMutation,
+  useUploadFactionBannerMutation,
+  useUploadPeriodImageMutation,
+  useUploadPeriodBannerMutation,
+  useUploadGameIconMutation,
+  useUploadGameBannerMutation,
 } = apiSlice;

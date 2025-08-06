@@ -1,35 +1,27 @@
 
 // src/pages/HomePage.tsx
 import React from 'react';
-import { Container, Card } from 'react-bootstrap';
-import LinkButton from '../components/LinkButton';
+import { Container, Row, Col, Card } from 'react-bootstrap';
+import NavButton_Type1 from '../components/NavButton_Type1';
 
 const HomePage: React.FC = () => {
   return (
-    <Container fluid className="py-5">
-      <div className="mx-auto" style={{ maxWidth: '1400px' }}>
-        <h1 className="mb-4">Добро пожаловать в BTapp</h1>
-        <p className="mb-4">
-          Это приложение поможет вам управлять данными мехов для игры Classic Battletech.
-        </p>
-        <Card>
-          <Card.Body>
-            <Card.Title>Возможности приложения:</Card.Title>
-            <ul className="ps-4 mb-4">
-              <li>Импорт данных мехов из CSV-файлов</li>
-              <li>Еще функционал</li>
-              <li>И еще функционал</li>
-              <li>И тут будет функционал</li>
-            </ul>
-            <LinkButton 
-              to="/import" 
-              variant="primary"
-            >
-              Начать импорт данных
-            </LinkButton>
-          </Card.Body>
-        </Card>
-      </div>
+    <Container className="py-5">
+      <Row className="justify-content-center">
+        <Col md={8} lg={6}>
+          <Card className="shadow">
+            <Card.Body className="p-5">
+              <h1 className="text-center mb-5">Добро пожаловать в BTapp</h1>
+              
+              <div className="d-grid gap-3">
+                <NavButton_Type1 to="/bt" variant="primary">
+                  BattleTech
+                </NavButton_Type1>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   );
 };
