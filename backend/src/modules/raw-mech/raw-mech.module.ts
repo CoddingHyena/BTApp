@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { RawMechService } from './raw-mech.service';
 import { RawMechController } from './raw-mech.controller';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, UserModule],
   controllers: [RawMechController],
   providers: [RawMechService],
   exports: [RawMechService],

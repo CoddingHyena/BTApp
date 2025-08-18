@@ -6,7 +6,9 @@ import { Faction } from '@prisma/client';
 import { AuthGuard } from '../../auth/auth.guard';
 import { RolesGuard } from '../../auth/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
+import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 
+@ApiTags('Factions')
 @Controller('factions')
 export class FactionController {
   private readonly logger = new Logger(FactionController.name);
@@ -28,14 +30,39 @@ export class FactionController {
     return this.factionService.findMajor();
   }
 
+  // Роут по коду должен идти выше, чем роут по :id
+  @Get('code/:code')
+  @ApiOperation({ summary: 'Получить фракцию по коду' })
+  @ApiParam({ name: 'code', type: String })
+  async findByCode(@Param('code') code: string): Promise<Faction> {
+    return this.factionService.findByCode(code);
+  }
+
+  @Get('top-level')
+  @ApiOperation({ summary: 'Корневые фракции (без родителя)' })
+  async findTopLevel(): Promise<Faction[]> {
+    return this.factionService.findTopLevelFactions();
+  }
+
   @Get(':id')
+  @ApiOperation({ summary: 'Получить фракцию по ID' })
+  @ApiParam({ name: 'id', type: Number })
   async findOne(@Param('id') id: string): Promise<Faction> {
     return this.factionService.findOne(+id);
   }
 
-  @Get('code/:code')
-  async findByCode(@Param('code') code: string): Promise<Faction> {
-    return this.factionService.findByCode(code);
+  @Get(':id/children')
+  @ApiOperation({ summary: 'Дочерние фракции' })
+  @ApiParam({ name: 'id', type: Number })
+  async findChildren(@Param('id') id: string): Promise<Faction[]> {
+    return this.factionService.findChildFactions(+id);
+  }
+
+  @Get(':id/tree')
+  @ApiOperation({ summary: 'Дерево фракции' })
+  @ApiParam({ name: 'id', type: Number })
+  async getTree(@Param('id') id: string): Promise<Faction> {
+    return this.factionService.getFactionTree(+id);
   }
 
   @Post()

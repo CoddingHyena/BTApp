@@ -92,11 +92,7 @@ const UserManagement: React.FC = () => {
                       </div>
                       <div>
                         <div className="fw-medium">{user.username}</div>
-                        {user.firstName && user.lastName && (
-                          <small className="text-muted">
-                            {user.firstName} {user.lastName}
-                          </small>
-                        )}
+                        
                       </div>
                     </div>
                   </td>

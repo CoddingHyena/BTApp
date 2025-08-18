@@ -7,8 +7,13 @@ export async function seedGames(prismaClient: PrismaClient) {
   const client = prismaClient || prisma;
   
   try {
-    // Очистка таблицы перед заполнением (опционально)
-    await client.game.deleteMany({});
+    // Проверяем, есть ли уже игры в базе
+    const existingGames = await client.game.findMany();
+    
+    if (existingGames.length > 0) {
+      console.log(`⚠️  Найдено ${existingGames.length} существующих игр, пропускаем создание`);
+      return;
+    }
 
     // Массив данных игр
     const games = [

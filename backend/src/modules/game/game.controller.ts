@@ -101,4 +101,33 @@ export class GameController {
   remove(@Param('id') id: string): Promise<Game> {
     return this.gameService.remove(id);
   }
+
+  @Get(':id/hierarchy')
+  @ApiOperation({ summary: 'Получить иерархию игры с подтипами' })
+  @ApiResponse({ status: 200, description: 'Иерархия игры' })
+  @ApiResponse({ status: 404, description: 'Игра не найдена' })
+  findHierarchy(@Param('id') id: string): Promise<Game> {
+    return this.gameService.findHierarchy(id);
+  }
+
+  @Get(':id/subtypes')
+  @ApiOperation({ summary: 'Получить подтипы игры' })
+  @ApiResponse({ status: 200, description: 'Список подтипов игры' })
+  findByParent(@Param('id') id: string): Promise<Game[]> {
+    return this.gameService.findByParent(id);
+  }
+
+  @Get('main/list')
+  @ApiOperation({ summary: 'Получить основные игры с подтипами' })
+  @ApiResponse({ status: 200, description: 'Список основных игр' })
+  findMainGames(): Promise<Game[]> {
+    return this.gameService.findMainGames();
+  }
+
+  @Get('subtypes/list')
+  @ApiOperation({ summary: 'Получить все подтипы игр' })
+  @ApiResponse({ status: 200, description: 'Список подтипов игр' })
+  findSubtypes(): Promise<Game[]> {
+    return this.gameService.findSubtypes();
+  }
 } 

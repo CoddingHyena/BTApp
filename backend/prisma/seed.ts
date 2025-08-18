@@ -4,11 +4,16 @@ import { seedPeriods } from './seeds/period.seeds';
 import { seedFactions } from './seeds/faction.seeds';
 import { seedMechAvailability } from './seeds/mech-availability.seeds';
 import { seedGames } from './seeds/game.seeds';
+import { seedUsers } from './seeds/user.seeds';
 
 const prisma = new PrismaClient();
 
 async function main() {
   try {
+    // Сначала создаем пользователей (включая администратора)
+    await seedUsers(prisma);
+    console.log('Users seeding completed');
+    
     // Последовательно запускаем seed-скрипты
     await seedPeriods(prisma);
     console.log('Periods seeding completed');
@@ -19,14 +24,14 @@ async function main() {
     await seedFactions(prisma);
     console.log('Factions seeding completed');
 
-        // Запускаем seed для mech_availability только если есть данные мехов
-        const mechCount = await prisma.rawMech.count();
-        if (mechCount > 0) {
-          await seedMechAvailability(prisma);
-          console.log('Mech availability seeding completed');
-        } else {
-          console.log('Skipping mech availability seeding: no mechs found');
-        }
+    // Запускаем seed для mech_availability только если есть данные мехов
+    const mechCount = await prisma.rawMech.count();
+    if (mechCount > 0) {
+      await seedMechAvailability(prisma);
+      console.log('Mech availability seeding completed');
+    } else {
+      console.log('Skipping mech availability seeding: no mechs found');
+    }
     
     console.log('All seeding completed successfully');
   } catch (error) {

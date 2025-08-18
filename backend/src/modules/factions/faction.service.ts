@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFactionDto } from './dto/create-faction.dto';
 import { UpdateFactionDto } from './dto/update-faction.dto';
@@ -55,6 +55,11 @@ export class FactionService {
   }
 
   async create(createFactionDto: CreateFactionDto): Promise<Faction> {
+    // Проверяем существование родительской фракции, если указана
+    if (createFactionDto.parentFactionId) {
+      await this.validateParentFaction(createFactionDto.parentFactionId);
+    }
+
     return this.prisma.faction.create({
       data: createFactionDto,
     });
@@ -91,6 +96,61 @@ export class FactionService {
       });
     } catch (error) {
       throw new NotFoundException(`Faction with ID ${id} not found`);
+    }
+  }
+
+  async findTopLevelFactions(): Promise<Faction[]> {
+    return this.prisma.faction.findMany({
+      where: {
+        parentFactionId: null,
+      },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async findChildFactions(parentId: number): Promise<Faction[]> {
+    return this.prisma.faction.findMany({
+      where: {
+        parentFactionId: parentId,
+      },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async getFactionTree(id: number): Promise<Faction> {
+    const faction = await this.prisma.faction.findUnique({
+      where: { id },
+    });
+
+    if (!faction) {
+      throw new NotFoundException(`Faction with ID ${id} not found`);
+    }
+
+    return faction;
+  }
+
+  async findRootFaction(factionId: number): Promise<Faction> {
+    const faction = await this.findOne(factionId);
+    
+    const parentId = (faction as any).parentFactionId as number | null | undefined;
+    if (!parentId) {
+      return faction;
+    }
+
+    return this.findRootFaction(parentId);
+  }
+
+  private async validateParentFaction(parentFactionId: number): Promise<void> {
+    const parentFaction = await this.prisma.faction.findUnique({
+      where: { id: parentFactionId },
+    });
+
+    if (!parentFaction) {
+      throw new BadRequestException(`Parent faction with ID ${parentFactionId} not found`);
+    }
+
+    if (!parentFaction.isActive) {
+      throw new BadRequestException(`Parent faction with ID ${parentFactionId} is not active`);
     }
   }
 }

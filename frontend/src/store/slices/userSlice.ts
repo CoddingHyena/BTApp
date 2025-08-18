@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { User, UpdateUserRoleRequest, UpdateUserStatusRequest } from '../../types/user';
 
-const API_BASE_URL = 'http://localhost:3002'; // Auth Service URL
+const API_BASE_URL = 'http://localhost:3000'; // Backend URL
 
 interface UserState {
   users: User[];

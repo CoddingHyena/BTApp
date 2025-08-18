@@ -97,4 +97,66 @@ export class GameService {
   async getCategories(): Promise<GameCategory[]> {
     return Object.values(GameCategory);
   }
+
+  async findByParent(parentId: string): Promise<Game[]> {
+    return this.prisma.game.findMany({
+      where: { 
+        parentGameId: parentId,
+        isActive: true 
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+  }
+
+  async findHierarchy(gameId: string): Promise<Game> {
+    const game = await this.prisma.game.findUnique({
+      where: { id: gameId },
+      include: {
+        parentGame: true,
+        childGames: {
+          where: { isActive: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+        factions: {
+          where: { isActive: true },
+          orderBy: { name: 'asc' },
+        },
+      },
+    });
+
+    if (!game) {
+      throw new NotFoundException(`Игра с ID ${gameId} не найдена`);
+    }
+
+    return game;
+  }
+
+  async findMainGames(): Promise<Game[]> {
+    return this.prisma.game.findMany({
+      where: { 
+        parentGameId: null,
+        isActive: true 
+      },
+      include: {
+        childGames: {
+          where: { isActive: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+  }
+
+  async findSubtypes(): Promise<Game[]> {
+    return this.prisma.game.findMany({
+      where: { 
+        isSubtype: true,
+        isActive: true 
+      },
+      include: {
+        parentGame: true,
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+  }
 } 
