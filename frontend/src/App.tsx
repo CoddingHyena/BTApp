@@ -16,7 +16,9 @@ import PeriodListPage from './pages/PeriodListPage';
 import MechAvailabilityPage from './pages/AvailabilityPage';
 import MissionListPage from './pages/MissionListPage';
 import MissionDetailPage from './pages/MissionDetailPage';
+import CampaignManagementPage from './pages/CampaignManagementPage';
 import BT_Page from './pages/BT_Page';
+import TC_Page from './pages/TC_Page';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -39,6 +41,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/bt" element={<BT_Page />} />
+          <Route path="/tc" element={<TC_Page />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           
@@ -70,6 +73,12 @@ function App() {
                                <Route path="/raw-mechs/validate" element={
                                  <ProtectedRoute requiredRoles={['ADMIN']}>
                                    <RawMechValidationPage />
+                                 </ProtectedRoute>
+                               } />
+
+                               <Route path="/campaigns" element={
+                                 <ProtectedRoute requiredRoles={['ADMIN']}>
+                                   <CampaignManagementPage />
                                  </ProtectedRoute>
                                } />
 

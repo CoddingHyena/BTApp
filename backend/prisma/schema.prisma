@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,174 +9,628 @@ datasource db {
 
 model RawMech {
   id          String   @id @default(uuid())
-  dbId        Int      @unique // DBID из CSV
-  name        String   // Name/Model
-  unitType    String   // Unit Type
-  technology  String   // Technology
-  chassis     String   // Chassis
-  era         String   // Era
-  year        Int      // Year
-  rulesLevel  String   // Rules Level (Era)
-  tonnage     Float    // Tonnage
-  battleValue Int      // Battle Value
-  pointValue  Int      // Point Value
-  cost        Float?   // Cost
-  rating      String?  // Rating
-  designer    String?  // Designer
-  
-  // Новое поле для отслеживания статуса валидации
+  dbId        Int      @unique
+  name        String
+  unitType    String
+  technology  String
+  chassis     String
+  era         String
+  year        Int
+  rulesLevel  String
+  tonnage     Float
+  battleValue Int
+  pointValue  Int
+  cost        Float?
+  rating      String?
+  designer    String?
   validated   Boolean  @default(false)
-  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  // Связь с проверенными мехами
   mechs       Mech[]
 
   @@map("raw_mechs")
 }
 
-// Новая модель для проверенных мехов
 model Mech {
-  id          String   @id @default(uuid())
-  dbId        Int      @unique // DBID из CSV
-  name        String   // Name/Model
-  unitType    String   // Unit Type
-  technology  String   // Technology
-  chassis     String   // Chassis
-  era         String   // Era
-  year        Int      // Year
-  rulesLevel  String   // Rules Level (Era)
-  tonnage     Float    // Tonnage
-  battleValue Int      // Battle Value
-  pointValue  Int      // Point Value
-  cost        Float?   // Cost
-  rating      String?  // Rating
-  designer    String?  // Designer
-  alphaCard   String?  // Ссылка на изображение Alpha Strike карточки
-  recSheet    String?  // Ссылка на изображение Record Sheet
-  vid         String?  // Ссылка на видео/изображение меха в действии
-  
-  // Связь с исходными данными
-  rawMechId   String?
-  rawMech     RawMech? @relation(fields: [rawMechId], references: [id])
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Связь с доступностями
+  id             String             @id @default(uuid())
+  dbId           Int                @unique
+  name           String
+  unitType       String
+  technology     String
+  chassis        String
+  era            String
+  year           Int
+  rulesLevel     String
+  tonnage        Float
+  battleValue    Int
+  pointValue     Int
+  cost           Float?
+  rating         String?
+  designer       String?
+  alphaCard      String?
+  recSheet       String?
+  vid            String?
+  rawMechId      String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
   availabilities MechAvailability[]
+  rawMech        RawMech?           @relation(fields: [rawMechId], references: [id])
 
   @@map("mechs")
 }
 
 model Period {
-  id             Int      @id @default(autoincrement())
-  name           String   @unique
-  code           String   @unique
-  startYear      Int
-  endYear        Int?     // Может быть null для текущих периодов
-  sortOrder      Int      @unique // Уникальный порядок сортировки
-  description    String?  @db.Text
-  imageUrl       String?  // Путь к изображению периода
-  bannerUrl      String?  // Путь к баннеру периода
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Связь с доступностями
+  id                 Int                @id @default(autoincrement())
+  name               String             @unique
+  code               String             @unique
+  startYear          Int
+  endYear            Int?
+  sortOrder          Int                @unique
+  description        String?
+  imageUrl           String?
+  bannerUrl          String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
   mechAvailabilities MechAvailability[]
 
   @@map("periods")
 }
 
 model Faction {
-  id             Int      @id @default(autoincrement())
-  name           String   @unique
-  code           String   @unique
-  primaryColor   String?  // HEX код основного цвета
-  secondaryColor String?  // HEX код вторичного цвета
-  formationYear  Int?     // Год формирования фракции
-  dissolutionYear Int?    // Год роспуска фракции (null если существует)
-  description    String?  @db.Text
-  logoUrl        String?  // Путь к логотипу/гербу
-  bannerUrl      String?  // Путь к баннеру фракции
-  gameIdRef      String?  // Ссылка на модель Game
-  game           Game?    @relation(fields: [gameIdRef], references: [id])
-  isMajor        Boolean  @default(false) // Флаг для основных фракций
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Связь с доступностями
+  id                 Int                @id @default(autoincrement())
+  name               String             @unique
+  code               String             @unique
+  primaryColor       String?
+  secondaryColor     String?
+  formationYear      Int?
+  dissolutionYear    Int?
+  description        String?
+  logoUrl            String?
+  bannerUrl          String?
+  isMajor            Boolean            @default(false)
+  isActive           Boolean            @default(true)
+  culture            String?            // Основная культура фракции (для обратной совместимости)
+  cultures           Json?              // JSON с весами культур: { "RUSSIAN": 0.7, "INDIAN": 0.3 }
+                clanSettings       Json?              // Настройки кланов: { "warriorNameChance": 0.2, "callsignChance": 0.15, "warriorNames": ["Alpha", "Beta"] }
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  gameIdRef          String?
+  parentFactionId    Int?
+  battleSides        BattleSide[]
+  campaignPilots     CampaignPilot[]
+  campaignPlayers    CampaignPlayer[]
+  campaignUnits      CampaignUnit[]
+  game               Game?              @relation(fields: [gameIdRef], references: [id])
+  parentFaction      Faction?           @relation("FactionHierarchy", fields: [parentFactionId], references: [id])
+  childFactions      Faction[]          @relation("FactionHierarchy")
+  formations         Formation[]
   mechAvailabilities MechAvailability[]
+  campaignFactions   CampaignFaction[]
 
   @@map("factions")
 }
 
 model MechAvailability {
-  id                String    @id @default(uuid())
-  
-  // Изменение связи с RawMech на Mech
-  mechId            String    // Ссылка на Mech
-  mech              Mech      @relation(fields: [mechId], references: [id], onDelete: Cascade)
-  
+  id                String   @id @default(uuid())
+  mechId            String
+  factionId         Int
+  periodId          Int
+  availabilityLevel String
+  introducedYear    Int?
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  faction           Faction  @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  mech              Mech     @relation(fields: [mechId], references: [id], onDelete: Cascade)
+  period            Period   @relation(fields: [periodId], references: [id], onDelete: Cascade)
 
-  factionId         Int       // Ссылка на Faction
-  periodId          Int       // Ссылка на Period
-  availabilityLevel String    // Уровень доступности
-  introducedYear    Int?      // Год введения меха
-  notes             String?   @db.Text
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  // Отношения с другими моделями
-  faction           Faction   @relation(fields: [factionId], references: [id], onDelete: Cascade)
-  period            Period    @relation(fields: [periodId], references: [id], onDelete: Cascade)
-
-  // Уникальный индекс для предотвращения дублирования
   @@unique([mechId, factionId, periodId])
   @@map("mech_availabilities")
 }
 
 model Mission {
-  id             String    @id @default(uuid())
-  code           String    @unique // Формат "BT-XXX" для быстрого поиска
-  title          String
-  description    String?   @db.Text // Общее описание миссии
-  objectives     String[]  // Основные задачи: ["1. Захват точки", "2. Удержание 5 ходов"]
-  type           MissionType
-  difficulty     MissionDifficulty
-  deploymentUrl  String?   // Схема расстановки (URL изображения)
-  
-  // Warchest система 
-  cost           Int?      @default(0) // Стоимость в Warchest Points
-  reward         Json?     // { points: Int, bonuses: String[] }
-  
-  // Метаданные
-  source         String?   // Источник, например "Total Warfare, p.102"
-  isOfficial     Boolean   @default(true) // false = пользовательская
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id            String            @id @default(uuid())
+  code          String            @unique
+  title         String
+  description   String?
+  objectives    String[]
+  type          MissionType
+  difficulty    MissionDifficulty
+  deploymentUrl String?
+  cost          Int?              @default(0)
+  reward        Json?
+  source        String?
+  isOfficial    Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  battleReports BattleReport[]
+  battles       Battle[]
 
   @@map("missions")
 }
 
 model Game {
-  id          String       @id @default(uuid())
-  name        String       @unique // Название игры
-  description String?      @db.Text // Описание игры
-  category    GameCategory // Тип игры (тактическая, стратегическая, RPG)
-  iconUrl     String?      // Путь к иконке/логотипу игры
-  bannerUrl   String?      // Путь к баннеру игры
-  isActive    Boolean      @default(true) // Активна ли игра
-  sortOrder   Int          @unique // Порядок сортировки
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  // Связь с фракциями
-  factions    Faction[]
+  id           String       @id @default(uuid())
+  name         String       @unique
+  description  String?
+  category     GameCategory
+  iconUrl      String?
+  bannerUrl    String?
+  isActive     Boolean      @default(true)
+  sortOrder    Int          @unique
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  isSubtype    Boolean      @default(false)
+  parentGameId String?
+  campaigns    Campaign[]
+  factions     Faction[]
+  parentGame   Game?        @relation("GameHierarchy", fields: [parentGameId], references: [id])
+  childGames   Game[]       @relation("GameHierarchy")
 
   @@map("games")
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  username         String           @unique
+  password         String
+  role             UserRole         @default(PLAYER)
+  avatar           String?
+  isActive         Boolean          @default(true)
+  isVerified       Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  lastLoginAt      DateTime?
+  campaignPlayers  CampaignPlayer[]
+  createdCampaigns Campaign[]
+  refreshTokens    RefreshToken[]
+  notifications    Notification[]    @relation("UserNotifications")
+  sentNotifications Notification[]   @relation("UserSentNotifications")
+
+  @@map("users")
+}
+
+model Notification {
+  id           String             @id @default(uuid())
+  type         NotificationType
+  title        String
+  message      String
+  recipientId  String
+  senderId     String?
+  campaignId   String?
+  isRead       Boolean            @default(false)
+  status       NotificationStatus @default(UNREAD)
+  metadata     Json               @default("{}")
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  
+  recipient    User               @relation("UserNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender       User?              @relation("UserSentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+  campaign     Campaign?          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Campaign {
+  id                   String             @id @default(uuid())
+  name                 String
+  description          String?
+  gameId               String
+  creatorId            String
+  campaignType         CampaignType
+  parentCampaignId     String?
+  status               CampaignStatus     @default(DRAFT)
+  startDate            DateTime?
+  endDate              DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  accessType           CampaignAccessType @default(OPEN)
+  maxPlayers           Int?
+  minPlayers           Int                @default(2)
+  commonRules          Json               @default("{}")
+  gameSpecificRules    Json               @default("{}")
+  tags                 Json               @default("[]")
+  metadata             Json               @default("{}")
+  imageUrl             String?
+  geographicScope      String?
+  thematicFocus        String?
+  eventType            EventType?
+  durationHours        Int?
+  maxParticipants      Int?
+  autoGenerate         Boolean            @default(false)
+  triggerConditions    Json               @default("{}")
+  completionConditions Json               @default("{}")
+  rewards              Json               @default("{}")
+  battleReports        BattleReport[]
+  battles              Battle[]
+  economy              CampaignEconomy[]
+  campaignMap          CampaignMap?
+  pilots               CampaignPilot[]
+  players              CampaignPlayer[]
+  progress             CampaignProgress[]
+  units                CampaignUnit[]
+  creator              User               @relation(fields: [creatorId], references: [id])
+  game                 Game               @relation(fields: [gameId], references: [id])
+  parentCampaign       Campaign?          @relation("CampaignHierarchy", fields: [parentCampaignId], references: [id])
+  childCampaigns       Campaign[]         @relation("CampaignHierarchy")
+  formations           Formation[]
+  notifications        Notification[]
+  campaignFactions     CampaignFaction[]
+
+  @@map("campaigns")
+}
+
+model CampaignFaction {
+  id         String   @id @default(uuid())
+  campaignId String
+  factionId  Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  faction    Faction  @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  
+  @@unique([campaignId, factionId])
+  @@map("campaign_factions")
+}
+
+model Formation {
+  id                 String            @id @default(uuid())
+  campaignId         String
+  factionId          Int
+  name               String
+  type               FormationType
+  parentFormationId  String?
+  isCommandLance     Boolean           @default(false)
+  isCommanderCompany Boolean           @default(false)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  curentPositionId   String?
+  battleFormations   BattleFormation[]
+  members            FormationMember[]
+  campaign           Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  curentPosition     MapNode?          @relation(fields: [curentPositionId], references: [id])
+  faction            Faction           @relation(fields: [factionId], references: [id])
+  parentFormation    Formation?        @relation("FormationHierarchy", fields: [parentFormationId], references: [id])
+  childFormations    Formation[]       @relation("FormationHierarchy")
+  movementOrders     MovementOrder[]
+
+  @@map("formations")
+}
+
+model FormationMember {
+  id             String         @id @default(uuid())
+  formationId    String
+  campaignUnitId String
+  slotIndex      Int?
+  joinedAt       DateTime       @default(now())
+  leftAt         DateTime?
+  pilotId        String?
+  campaignUnit   CampaignUnit   @relation(fields: [campaignUnitId], references: [id], onDelete: Cascade)
+  formation      Formation      @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  pilot          CampaignPilot? @relation(fields: [pilotId], references: [id])
+
+  @@unique([formationId, campaignUnitId])
+  @@map("formation_members")
+}
+
+model MapTemplate {
+  id           String        @id @default(uuid())
+  name         String
+  imageUrl     String?
+  width        Int?
+  height       Int?
+  scale        Float?        @default(1)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  campaignMaps CampaignMap[]
+  edges        MapEdge[]
+  nodes        MapNode[]
+
+  @@map("map_templates")
+}
+
+model MapNode {
+  id         String      @id @default(uuid())
+  templateId String
+  x          Int
+  y          Int
+  label      String?
+  type       String?
+  battles    Battle[]
+  formations Formation[]
+  edgesFrom  MapEdge[]   @relation("EdgeFrom")
+  edgesTo    MapEdge[]   @relation("EdgeTo")
+  template   MapTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("map_nodes")
+}
+
+model MapEdge {
+  id            String      @id @default(uuid())
+  templateId    String
+  fromNodeId    String
+  toNodeId      String
+  cost          Int         @default(1)
+  bidirectional Boolean     @default(true)
+  fromNode      MapNode     @relation("EdgeFrom", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  template      MapTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  toNode        MapNode     @relation("EdgeTo", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  @@map("map_edges")
+}
+
+model CampaignMap {
+  id         String      @id @default(uuid())
+  campaignId String      @unique
+  templateId String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  campaign   Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  template   MapTemplate @relation(fields: [templateId], references: [id])
+
+  @@map("campaign_maps")
+}
+
+model MovementOrder {
+  id               String            @id @default(uuid())
+  campaignId       String
+  formationId      String
+  pathNodeIds      Json
+  status           MovementStatus    @default(QUEUED)
+  currentEdgeIndex Int               @default(0)
+  remainingCost    Int               @default(0)
+  createdAt        DateTime          @default(now())
+  startedAt        DateTime?
+  completedAt      DateTime?
+  canceledAt       DateTime?
+  orderType        MovementOrderType @default(NORMAL)
+  formation        Formation         @relation(fields: [formationId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([formationId])
+  @@map("movement_orders")
+}
+
+model Battle {
+  id         String            @id @default(uuid())
+  campaignId String
+  nodeId     String
+  missionId  String
+  status     BattleStatus      @default(SCHEDULED)
+  rules      Json              @default("{}")
+  notes      String?
+  createdAt  DateTime          @default(now())
+  startedAt  DateTime?
+  resolvedAt DateTime?
+  formations BattleFormation[]
+  reports    BattleReport[]
+  sides      BattleSide[]
+  campaign   Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  mission    Mission           @relation(fields: [missionId], references: [id])
+  node       MapNode           @relation(fields: [nodeId], references: [id])
+
+  @@index([campaignId])
+  @@index([nodeId])
+  @@map("battles")
+}
+
+model BattleSide {
+  id            String            @id @default(uuid())
+  battleId      String
+  factionId     Int
+  role          BattleSideRole
+  outcome       BattleResult?
+  victoryPoints Int               @default(0)
+  summary       Json              @default("{}")
+  formations    BattleFormation[]
+  battle        Battle            @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  faction       Faction           @relation(fields: [factionId], references: [id])
+
+  @@index([battleId])
+  @@map("battle_sides")
+}
+
+model BattleFormation {
+  id                String             @id @default(uuid())
+  battleId          String
+  sideId            String
+  formationId       String
+  committedUnits    Json               @default("[]")
+  participationType ParticipationType?
+  startingBV        Int?
+  endingBV          Int?
+  losses            Json               @default("[]")
+  retreatAllowed    Boolean            @default(false)
+  retreated         Boolean            @default(false)
+  battle            Battle             @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  formation         Formation          @relation(fields: [formationId], references: [id])
+  side              BattleSide         @relation(fields: [sideId], references: [id], onDelete: Cascade)
+
+  @@index([battleId])
+  @@index([sideId])
+  @@index([formationId])
+  @@map("battle_formations")
+}
+
+model CampaignPlayer {
+  id            String            @id @default(uuid())
+  campaignId    String
+  playerId      String
+  factionId     Int?
+  joinedAt      DateTime          @default(now())
+  avatarUrl     String?
+  lastActivity  DateTime          @updatedAt
+  nickname      String?
+  notes         String?
+  preferences   Json              @default("{}")
+  totalBattles  Int               @default(0)
+  winRate       Float             @default(0)
+  status        PlayerStatus      @default(ACTIVE)
+  role          PlayerRole        @default(PLAYER)
+  battleReports BattleReport[]
+  economy       CampaignEconomy?
+  campaign      Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  faction       Faction?          @relation(fields: [factionId], references: [id])
+  player        User              @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  progress      CampaignProgress?
+
+  @@unique([campaignId, playerId])
+  @@map("campaign_players")
+}
+
+model CampaignEconomy {
+  id                String         @id @default(uuid())
+  campaignId        String
+  playerId          String
+  currentFunds      Int            @default(0)
+  incomePerTurn     Int            @default(0)
+  repairCosts       Int            @default(0)
+  lastUpdated       DateTime       @updatedAt
+  battleRewards     Int            @default(0)
+  debt              Int            @default(0)
+  diplomaticCosts   Int            @default(0)
+  maintenanceCosts  Int            @default(0)
+  startingFunds     Int            @default(0)
+  territoryIncome   Int            @default(0)
+  totalExpenses     Int            @default(0)
+  totalIncome       Int            @default(0)
+  tradeIncome       Int            @default(0)
+  transactions      Json           @default("[]")
+  transportCosts    Int            @default(0)
+  unitPurchaseCosts Int            @default(0)
+  pilotHiringCosts  Int            @default(0)
+  campaign          Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  player            CampaignPlayer @relation(fields: [campaignId, playerId], references: [campaignId, playerId])
+
+  @@unique([campaignId, playerId])
+  @@map("campaign_economy")
+}
+
+model CampaignProgress {
+  id              String         @id @default(uuid())
+  campaignId      String
+  playerId        String
+  lastUpdated     DateTime       @updatedAt
+  achievements    Json           @default("[]")
+  battlesDrawn    Int            @default(0)
+  battlesLost     Int            @default(0)
+  battlesWon      Int            @default(0)
+  firstBattleDate DateTime?
+  lastBattleDate  DateTime?
+  lossStreak      Int            @default(0)
+  medals          Json           @default("[]")
+  rank            String?
+  rating          Int            @default(1000)
+  winStreak       Int            @default(0)
+  campaign        Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  player          CampaignPlayer @relation(fields: [campaignId, playerId], references: [campaignId, playerId])
+
+  @@unique([campaignId, playerId])
+  @@map("campaign_progress")
+}
+
+model BattleReport {
+  id              String         @id @default(uuid())
+  campaignId      String
+  playerId        String
+  opponentId      String?
+  battleDate      DateTime
+  data            Json           @default("{}")
+  createdAt       DateTime       @default(now())
+  battleValue     Int?
+  isVerified      Boolean        @default(false)
+  location        String?
+  moderatorNotes  String?
+  opponentFaction String?
+  playerFaction   String?
+  playerForce     Json           @default("{}")
+  playerNotes     String?
+  verifiedAt      DateTime?
+  verifiedBy      String?
+  victoryPoints   Int?
+  result          BattleResult
+  missionId       String?
+  battleId        String?
+  pilotCasualties Json           @default("[]")
+  pilotExperience Json           @default("{}")
+  battle          Battle?        @relation(fields: [battleId], references: [id])
+  campaign        Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  player          CampaignPlayer @relation(fields: [campaignId, playerId], references: [campaignId, playerId])
+  mission         Mission?       @relation(fields: [missionId], references: [id])
+
+  @@map("battle_reports")
+}
+
+model CampaignUnit {
+  id               String            @id @default(uuid())
+  campaignId       String
+  unitType         UnitType
+  unitId           String?
+  name             String
+  status           UnitStatus        @default(ACTIVE)
+  role             Json              @default("{}")
+  damageHistory    Json              @default("[]")
+  battleHistory    Json              @default("[]")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  damageType       DamageType?
+  isRepaired       Boolean           @default(false)
+  repairCost       Int               @default(0)
+  repairTime       Int               @default(0)
+  pilotId          String?
+  factionId        Int
+  campaign         Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  faction          Faction           @relation(fields: [factionId], references: [id])
+  pilot            CampaignPilot?    @relation(fields: [pilotId], references: [id])
+  formationMembers FormationMember[]
+
+  @@map("campaign_units")
+}
+
+model CampaignPilot {
+  id               String              @id @default(uuid())
+  campaignId       String
+  rank             FormationMemberRole @default(MEMBER)
+  gunnery          Int
+  piloting         Int
+  alphaStrikeSkill Int
+  experience       Int                 @default(0)
+  specialization   PilotSpecialization @default(MECH)
+  specialAbilities Json                @default("[]")
+  status           PilotStatus         @default(ACTIVE)
+  battleHistory    Json                @default("[]")
+  awards           Json                @default("[]")
+  hiredAt          DateTime            @default(now())
+  cost             Int                 @default(0)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  factionId        Int
+  callsign         String
+  firstName        String
+  lastName         String
+  gender           Gender              @default(MALE)
+  campaign         Campaign            @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  faction          Faction             @relation(fields: [factionId], references: [id])
+  units            CampaignUnit[]
+  formationMembers FormationMember[]
+
+  @@map("campaign_pilots")
 }
 
 enum MissionType {
@@ -206,57 +657,177 @@ enum GameCategory {
   MINIATURES
 }
 
-// Enum для ролей пользователей
 enum UserRole {
   PLAYER
   MODERATOR
   ADMIN
 }
 
-// Модель пользователя
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  username  String   @unique
-  password  String   // Хешированный пароль
-  role      UserRole @default(PLAYER)
-  
-  // Метаданные
-  firstName String?
-  lastName  String?
-  avatar    String?  // URL аватара
-  
-  // Статус аккаунта
-  isActive  Boolean  @default(true)
-  isVerified Boolean @default(false)
-  
-  // Временные метки
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLoginAt DateTime?
-  
-  // Refresh токены (для JWT)
-  refreshTokens RefreshToken[]
-  
-  @@map("users")
+enum CampaignType {
+  MAIN
+  SEASON
+  SUBCAMPAIGN
+  EVENT
 }
 
-// Модель для refresh токенов
-model RefreshToken {
-  id          String   @id @default(uuid())
-  token       String   @unique
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Метаданные токена
-  expiresAt   DateTime
-  isRevoked   Boolean  @default(false)
-  
-  // IP и User Agent для безопасности
-  ipAddress   String?
-  userAgent   String?
-  
-  createdAt   DateTime @default(now())
-  
-  @@map("refresh_tokens")
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ENDED
+  ARCHIVED
+}
+
+enum CampaignAccessType {
+  OPEN
+  INVITE_ONLY
+  PRIVATE
+}
+
+enum PlayerStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+  SUSPENDED
+}
+
+enum PlayerRole {
+  PLAYER
+  STRATEGIST
+  MODERATOR
+  ADMIN
+  SPECTATOR
+}
+
+enum BattleResult {
+  VICTORY
+  DEFEAT
+  DRAW
+  ABANDONED
+}
+
+enum BattleType {
+  SKIRMISH
+  ASSAULT
+  ESCORT
+  RECONNAISSANCE
+  SIEGE
+}
+
+enum EventType {
+  BATTLE
+  DIPLOMATIC
+  ECONOMIC
+  SPECIAL
+}
+
+enum UnitType {
+  MECH
+  VEHICLE
+  INFANTRY
+  AIRCRAFT
+  SPACECRAFT
+  CUSTOM
+}
+
+enum UnitStatus {
+  ACTIVE
+  DAMAGED
+  DESTROYED
+  REPAIRING
+  IN_TRANSIT
+  INACTIVE
+}
+
+enum DamageType {
+  STRUCTURAL
+  WEAPON
+  ARMOR
+  SYSTEM
+  HEAT
+  CRITICAL
+}
+
+enum MovementType {
+  GROUND
+  AIR
+  SPACE
+  WATER
+  TELEPORT
+}
+
+enum FormationType {
+  LANCE
+  COMPANY
+  DIVISION
+}
+
+enum FormationMemberRole {
+  MEMBER
+  LANCE_LEADER
+  COMPANY_LEADER
+  BODYGUARD
+  DIVISION_COMMANDER
+}
+
+enum PilotStatus {
+  ACTIVE
+  WOUNDED
+  KILLED
+  ON_LEAVE
+}
+
+enum PilotSpecialization {
+  MECH
+  VEHICLE
+  AIRCRAFT
+  INFANTRY
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum MovementStatus {
+  QUEUED
+  IN_PROGRESS
+  ARRIVED
+  CANCELLED
+}
+
+enum MovementOrderType {
+  NORMAL
+  RETREAT
+}
+
+enum BattleStatus {
+  SCHEDULED
+  ACTIVE
+  RESOLVED
+  CANCELLED
+}
+
+enum BattleSideRole {
+  ATTACKER
+  DEFENDER
+}
+
+enum ParticipationType {
+  MAIN
+  RESERVE
+  REINFORCEMENT
+}
+
+enum NotificationType {
+  CAMPAIGN_INVITE
+  CAMPAIGN_UPDATE
+  BATTLE_RESULT
+  SYSTEM_MESSAGE
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
 }

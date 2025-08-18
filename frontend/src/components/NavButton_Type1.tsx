@@ -8,6 +8,8 @@ interface NavButton_Type1Props {
   variant?: string;
   size?: 'sm' | 'lg';
   className?: string;
+  icon?: React.ReactNode; // Добавляем поддержку иконки
+  iconSize?: number; // Размер иконки в пикселях
 }
 
 const NavButton_Type1: React.FC<NavButton_Type1Props> = ({
@@ -15,7 +17,9 @@ const NavButton_Type1: React.FC<NavButton_Type1Props> = ({
   children,
   variant = 'primary',
   size = 'lg',
-  className = ''
+  className = '',
+  icon,
+  iconSize = 48 // Размер иконки по умолчанию
 }) => {
   return (
     <Link to={to} style={{ textDecoration: 'none' }}>
@@ -32,10 +36,24 @@ const NavButton_Type1: React.FC<NavButton_Type1Props> = ({
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          textAlign: 'center'
+          textAlign: 'center',
+          gap: '12px' // Отступ между иконкой и текстом
         }}
       >
-        {children}
+        {icon && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            width: `${iconSize}px`,
+            height: `${iconSize}px`
+          }}>
+            {icon}
+          </div>
+        )}
+        <div>
+          {children}
+        </div>
       </Button>
     </Link>
   );

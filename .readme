@@ -1,7 +1,7 @@
 
 Back:  npm run start:dev
 Front:  npm run dev
-auth: npm run start:dev
+
 
 "db:restart": npm run db:restart
 

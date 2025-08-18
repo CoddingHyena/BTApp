@@ -3,9 +3,10 @@ import { PeriodService } from './period.service';
 import { PeriodController } from './period.controller';
 import { PeriodUploadController } from './period-upload.controller';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, UserModule],
   controllers: [PeriodController, PeriodUploadController],
   providers: [PeriodService],
   exports: [PeriodService], // Экспортируем сервис для использования в других модулях

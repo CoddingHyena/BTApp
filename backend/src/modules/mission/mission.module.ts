@@ -3,9 +3,10 @@ import { MissionService } from './mission.service';
 import { MissionController } from './mission.controller';
 import { MissionUploadController } from './mission-upload.controller';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, UserModule],
   controllers: [MissionController, MissionUploadController],
   providers: [MissionService],
   exports: [MissionService], // Экспорт для возможного использования в других модулях

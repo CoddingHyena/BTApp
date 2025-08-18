@@ -6,6 +6,7 @@ import { Game, CreateGameDto, UpdateGameDto } from '../../types/game';
 import { Period } from '../../types/period';
 import { MechAvailability } from '../../types/availability';
 import { Mission, CreateMissionDto, UpdateMissionDto } from '../../types/mission';
+import { Campaign, CreateCampaignDto, UpdateCampaignDto } from '../../types/campaign';
 import { API_BASE_URL } from '../../config/api';
 
 // Define a service using a base URL and expected endpoints
@@ -22,7 +23,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Mech', 'RawMech', 'Faction', 'Game', 'Period', 'MechAvailability', 'Mission'],
+  tagTypes: ['Mech', 'RawMech', 'Faction', 'Game', 'Period', 'MechAvailability', 'Mission', 'Campaign'],
   endpoints: (builder) => ({
     // Mech endpoints
     getMechs: builder.query<Mech[], void>({
@@ -374,6 +375,45 @@ export const apiSlice = createApi({
         body: formData,
       }),
     }),
+
+    // Campaign endpoints
+    getCampaigns: builder.query<Campaign[], void>({
+      query: () => '/campaigns',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'Campaign' as const, id })),
+              { type: 'Campaign', id: 'LIST' },
+            ]
+          : [{ type: 'Campaign', id: 'LIST' }],
+    }),
+    getCampaignById: builder.query<Campaign, string>({
+      query: (id) => `/campaigns/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Campaign', id }],
+    }),
+    createCampaign: builder.mutation<Campaign, CreateCampaignDto>({
+      query: (campaign) => ({
+        url: '/campaigns',
+        method: 'POST',
+        body: campaign,
+      }),
+      invalidatesTags: [{ type: 'Campaign', id: 'LIST' }],
+    }),
+    updateCampaign: builder.mutation<Campaign, UpdateCampaignDto & { id: string }>({
+      query: ({ id, ...campaign }) => ({
+        url: `/campaigns/${id}`,
+        method: 'PATCH',
+        body: campaign,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Campaign', id }],
+    }),
+    deleteCampaign: builder.mutation<Campaign, string>({
+      query: (id) => ({
+        url: `/campaigns/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Campaign', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -425,4 +465,9 @@ export const {
   useUploadPeriodBannerMutation,
   useUploadGameIconMutation,
   useUploadGameBannerMutation,
+  useGetCampaignsQuery,
+  useGetCampaignByIdQuery,
+  useCreateCampaignMutation,
+  useUpdateCampaignMutation,
+  useDeleteCampaignMutation,
 } = apiSlice;

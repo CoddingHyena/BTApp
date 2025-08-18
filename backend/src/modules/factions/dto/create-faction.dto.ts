@@ -63,4 +63,39 @@ export class CreateFactionDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @ApiProperty({ description: 'ID родительской фракции', required: false })
+  @IsOptional()
+  @IsInt()
+  parentFactionId?: number;
+
+  @ApiProperty({ 
+    description: 'Основная культура фракции', 
+    required: false, 
+    enum: ['GERMAN', 'JAPANESE', 'CHINESE', 'ANGLO_SAXON', 'MEDITERRANEAN', 'RUSSIAN', 'INDIAN', 'SCANDINAVIAN', 'CLAN'],
+    example: 'JAPANESE'
+  })
+  @IsOptional()
+  @IsString()
+  culture?: string;
+
+  @ApiProperty({ 
+    description: 'JSON с весами культур фракции', 
+    required: false, 
+    example: { "RUSSIAN": 0.7, "INDIAN": 0.3 }
+  })
+  @IsOptional()
+  cultures?: Record<string, number>;
+
+                  @ApiProperty({
+    description: 'Настройки кланов (для CLAN культуры)',
+    required: false,
+    example: { "warriorNameChance": 0.2, "callsignChance": 0.15, "warriorNames": ["Alpha", "Beta", "Gamma"] }
+  })
+  @IsOptional()
+  clanSettings?: {
+    warriorNameChance: number;
+    callsignChance: number;
+    warriorNames: string[];
+  };
 }

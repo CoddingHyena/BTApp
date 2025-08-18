@@ -38,6 +38,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'ANGLO_SAXON',
+        cultures: { "ANGLO_SAXON": 0.7, "GERMAN": 0.1, "MEDITERRANEAN": 0.1, "RUSSIAN": 0.1 }, 
       },
       {
         name: 'Draconis Combine',
@@ -52,6 +54,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'JAPANESE',
+        cultures: { "JAPANESE": 0.8, "MEDITERRANEAN": 0.1, "RUSSIAN": 0.1 }, 
       },
       {
         name: 'Capellan Confederation',
@@ -66,6 +70,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'CHINESE',
+        cultures: { "CHINESE": 0.5, "INDIAN": 0.2, "RUSSIAN": 0.2, "ANGLO_SAXON": 0.1 }, 
       },
       {
         name: 'Free Worlds League',
@@ -80,6 +86,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'MEDITERRANEAN',
+        cultures: { "ANGLO_SAXON": 0.7, "GERMAN": 0.1, "MEDITERRANEAN": 0.1, "CHINESE": 0.1 }, 
       },
       {
         name: 'Lyran Commonwealth',
@@ -94,6 +102,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'GERMAN',
+        cultures: { "GERMAN": 0.7, "ANGLO_SAXON": 0.1, "MEDITERRANEAN": 0.1,  "RUSSIAN": 0.1 }, 
       },
       {
         name: 'Lyran Alliance',
@@ -108,6 +118,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'GERMAN',
+        cultures: { "GERMAN": 0.7, "ANGLO_SAXON": 0.1, "MEDITERRANEAN": 0.1,  "RUSSIAN": 0.1 }, 
       },
       {
         name: 'ComStar',
@@ -122,6 +134,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Основная культура (для обратной совместимости)
+        cultures: { "ANGLO_SAXON": 0.3, "GERMAN": 0.2, "JAPANESE": 0.15, "CHINESE": 0.15, "MEDITERRANEAN": 0.1, "RUSSIAN": 0.1 }, // Смешанная культура
       },
       {
         name: 'Clan Wolf',
@@ -136,6 +150,33 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'CLAN',
+        cultures: { 
+          "ANGLO_SAXON": 0.35,    // Европейские имена
+          "GERMAN": 0.25,         // Европейские имена
+          "SCANDINAVIAN": 0.15,   // Европейские имена
+          "MEDITERRANEAN": 0.10,  // Европейские имена
+          "JAPANESE": 0.08,       // Азиатские имена
+          "CHINESE": 0.04,        // Азиатские имена
+          "RUSSIAN": 0.03         // Славянские имена
+        },
+        clanSettings: {
+          warriorNameChance: 0.2,  // 20% воинов с фамилиями
+          callsignChance: 0.15,    // 15% воинов с позывными
+          warriorNames: [
+            // Настоящие клановые фамилии BattleTech
+            'Kerensky', 'Ward', 'Jorgensson', 'Showers', 'Fetladral', 'Hazen',
+            'Kabrinski', 'Osis', 'Pryde', 'Malthus', 'Dinour', 'Ferrer', 'Carns',
+            'Radick', 'Sennet', 'Devalis', 'Bekker', 'Mattlov', 'Bjorn', 'Fletcher',
+            'Leroux', 'Marek', 'Mechow', 'Nagle', 'Quinn', 'Rood', 'Shaw', 'Tanaga',
+            'Vong', 'Zane', 'Cynthy', 'Holliday', 'Irvine', 'Koga', 'Lankenau',
+            'Mendoza', 'Otis', 'Pavel', 'Rosse', 'Tseng', 'Volk', 'West', 'Yanez',
+            'Zibler', 'Carr', 'Dumont', 'Eld', 'Furey', 'Golightly', 'Hudson',
+            'Ilsa', 'Jerricho', 'Kisho', 'Lyon', 'Wolf', 'Falcon', 'Bear', 'Tiger',
+            'Jaguar', 'Cobra', 'Viper', 'Scorpion', 'Spider', 'Mongoose', 'Fox',
+            'Horse', 'Goat', 'Rat', 'Cat', 'Dog', 'Bird', 'Fish', 'Snake'
+          ]
+        }
       },
       {
         name: 'Clan Jade Falcon',
@@ -150,6 +191,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'INDIAN',
       },
       {
         name: 'Clan Ghost Bear',
@@ -164,6 +206,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'INDIAN',
       },
       {
         name: 'Kell Hounds',
@@ -178,6 +221,9 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Наемники используют смешанную культуру
+        cultures: { "ANGLO_SAXON": 0.17, "GERMAN": 0.17, "JAPANESE": 0.13, "CHINESE": 0.12, "MEDITERRANEAN": 0.17, "RUSSIAN": 0.12,  "INDIAN": 0.12 }, // Смешанная культура
+        
       },
       {
         name: 'Wolf\'s Dragoons',
@@ -192,6 +238,9 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Наемники используют смешанную культуру
+         cultures: { "ANGLO_SAXON": 0.17, "GERMAN": 0.17, "JAPANESE": 0.13, "CHINESE": 0.12, "MEDITERRANEAN": 0.17, "RUSSIAN": 0.12,  "INDIAN": 0.12 }, // Смешанная культура
+        
       },
       {
         name: 'Word of Blake',
@@ -206,6 +255,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Наследует от ComStar
+        cultures: { "ANGLO_SAXON": 0.3, "GERMAN": 0.2, "JAPANESE": 0.15, "CHINESE": 0.15, "MEDITERRANEAN": 0.1, "RUSSIAN": 0.1 }, // Смешанная культура
       },
       {
         name: 'Republic of the Sphere',
@@ -220,6 +271,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Смешанная культура
+        cultures: { "ANGLO_SAXON": 0.3, "GERMAN": 0.2, "JAPANESE": 0.15, "CHINESE": 0.15, "MEDITERRANEAN": 0.1, "RUSSIAN": 0.1 }, // Смешанная культура
       },
 
           {
@@ -235,6 +288,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: false,
+        culture: 'SCANDINAVIAN', 
+        cultures: { "SCANDINAVIAN": 0.7, "GERMAN": 0.1, "JAPANESE": 0.2}, // Смешанная культура
       },
       {
         name: 'Rasalhague Dominion',
@@ -249,6 +304,25 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'SCANDINAVIAN', // Основная культура (для обратной совместимости)
+        cultures: { "SCANDINAVIAN": 0.4, "CLAN": 0.6 }, // 40% скандинавские правила, 60% клановые правила
+        clanSettings: {
+          warriorNameChance: 0.2,  // 20% воинов с фамилиями (для клановой части)
+          callsignChance: 0.15,    // 15% воинов с позывными (для клановой части)
+          warriorNames: [
+            // Клановые фамилии для Dominion
+            'Kerensky', 'Ward', 'Jorgensson', 'Showers', 'Fetladral', 'Hazen',
+            'Kabrinski', 'Osis', 'Pryde', 'Malthus', 'Dinour', 'Ferrer', 'Carns',
+            'Radick', 'Sennet', 'Devalis', 'Bekker', 'Mattlov', 'Bjorn', 'Fletcher',
+            'Leroux', 'Marek', 'Mechow', 'Nagle', 'Quinn', 'Rood', 'Shaw', 'Tanaga',
+            'Vong', 'Zane', 'Cynthy', 'Holliday', 'Irvine', 'Koga', 'Lankenau',
+            'Mendoza', 'Otis', 'Pavel', 'Rosse', 'Tseng', 'Volk', 'West', 'Yanez',
+            'Zibler', 'Carr', 'Dumont', 'Eld', 'Furey', 'Golightly', 'Hudson',
+            'Ilsa', 'Jerricho', 'Kisho', 'Lyon', 'Wolf', 'Falcon', 'Bear', 'Tiger',
+            'Jaguar', 'Cobra', 'Viper', 'Scorpion', 'Spider', 'Mongoose', 'Fox',
+            'Horse', 'Goat', 'Rat', 'Cat', 'Dog', 'Bird', 'Fish', 'Snake'
+          ]
+        }
       },
 
         {
@@ -264,6 +338,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true, 
         isActive: true,
+        culture: 'ANGLO_SAXON', // Основная культура (для обратной совместимости)
+        cultures: { "ANGLO_SAXON": 0.25, "GERMAN": 0.15, "JAPANESE": 0.1, "CHINESE": 0.1, "MEDITERRANEAN": 0.1, "RUSSIAN": 0.15, "INDIAN": 0.1, "SCANDINAVIAN": 0.05 }, // Все культуры
       },
         {
         name: 'Clan Hell\'s Horses',
@@ -278,6 +354,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: true,
         isActive: true,
+        culture: 'INDIAN',
       },
 
             {
@@ -293,6 +370,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: trenchCrusadeGame.id, 
         isMajor: false,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Европейская средневековая культура
       },
             {
         name: 'The Apostates',
@@ -307,6 +385,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: trenchCrusadeGame.id,
         isMajor: false,
         isActive: true,
+        culture: 'RUSSIAN', // Тёмная культура еретиков
       },
           {
         name: 'The Iron Pact',
@@ -321,6 +400,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: trenchCrusadeGame.id,
         isMajor: false,
         isActive: true,
+        culture: 'ANGLO_SAXON', // Технократическая культура
       },
             {
         name: '2nd Legion of Vega',
@@ -335,6 +415,8 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: false, // Не главная фракция, но культовая
         isActive: true,
+        // culture: null - наследует от Draconis Combine
+        // parentFactionId будет установлен после создания всех фракций
       },
             {
         name: '4th Sword of Light',
@@ -349,6 +431,7 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: false, // Часть DCMS, но не отдельная фракция
         isActive: true,
+        // culture: null - наследует от Draconis Combine
       },
             {
         name: 'Omega Galaxy (Clan Hell\'s Horses)',
@@ -363,14 +446,40 @@ export async function seedFactions(prismaClient: PrismaClient) {
         gameIdRef: battletechGame.id,
         isMajor: false, // Галактика — часть клана, не отдельная фракция
         isActive: true,
+        // culture: null - наследует от Clan Hell's Horses
       },
     ];
 
     // Создание записей в базе данных
+    const createdFactions: any[] = [];
     for (const faction of factions) {
-      await client.faction.create({
+      const createdFaction = await client.faction.create({
         data: faction,
       });
+      createdFactions.push(createdFaction);
+    }
+
+    // Установка связей parentFactionId для дочерних фракций
+    const draconisCombine = createdFactions.find(f => f.name === 'Draconis Combine');
+    const clanHellHorses = createdFactions.find(f => f.name === 'Clan Hell\'s Horses');
+    const rasalhagueRepublic = createdFactions.find(f => f.name === 'Rasalhague Republic');
+
+    // Обновляем дочерние фракции
+    const childFactions = [
+      { name: '2nd Legion of Vega', parentId: draconisCombine?.id },
+      { name: '4th Sword of Light', parentId: draconisCombine?.id },
+      { name: 'Omega Galaxy (Clan Hell\'s Horses)', parentId: clanHellHorses?.id },
+      // Rasalhague Dominion - самостоятельная фракция, не дочерняя
+    ];
+
+    for (const childFaction of childFactions) {
+      if (childFaction.parentId) {
+        await client.faction.update({
+          where: { name: childFaction.name },
+          data: { parentFactionId: childFaction.parentId }
+        });
+        console.log(`✅ Установлена связь: ${childFaction.name} → ${childFaction.parentId}`);
+      }
     }
 
     console.log('Factions seeded successfully');

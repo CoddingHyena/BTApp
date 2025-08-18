@@ -1,215 +1,428 @@
 # BTapp Frontend
 
-## Компоненты загрузки изображений
+## Описание
 
-### UniversalImageUpload
+BTapp Frontend - это веб-приложение, построенное на React с использованием TypeScript, предназначенное для управления настольными играми, в частности для игр в стиле BattleTech и Trench Crusade. Приложение предоставляет интуитивный пользовательский интерфейс для работы с кампаниями, техникой, фракциями и другими игровыми элементами.
 
-Универсальный компонент для загрузки изображений разных типов.
+## 🚀 Основные возможности
 
-#### Использование:
+- **Современный UI/UX** - интерфейс на основе React Bootstrap с адаптивным дизайном
+- **Система аутентификации** - регистрация, вход и управление пользователями
+- **Ролевая система** - различные уровни доступа (ADMIN, MODERATOR, STRATEGIST, PLAYER)
+- **Управление контентом** - CRUD операции для всех игровых сущностей
+- **Загрузка файлов** - поддержка загрузки изображений и документов
+- **Валидация данных** - проверка и валидация игровых данных
+- **Экспорт данных** - выгрузка информации в различных форматах
+- **Маршрутизация** - защищенные и публичные маршруты
 
-```tsx
-import UniversalImageUpload from './components/UniversalImageUpload';
-import { useUploadFactionLogoMutation } from '../store/api/apiSlice';
+## 🛠 Технологический стек
 
-const MyComponent = () => {
-  const [uploadLogo] = useUploadFactionLogoMutation();
-  
-  const handleLogoUpload = (imageUrl: string) => {
-    console.log('Uploaded logo URL:', imageUrl);
-  };
+- **Framework**: React 19.x с TypeScript
+- **Build Tool**: Vite 6.x
+- **State Management**: Redux Toolkit + RTK Query
+- **UI Library**: React Bootstrap 2.x
+- **Routing**: React Router DOM 7.x
+- **Forms**: React Hook Form 7.x
+- **HTTP Client**: Axios
+- **Styling**: Bootstrap 5.x + CSS
+- **Development**: ESLint + Prettier
 
-  return (
-    <UniversalImageUpload
-      uploadFunction={uploadLogo}
-      uploadType="faction-logo"
-      onImageUploaded={handleLogoUpload}
-      currentImageUrl="/uploads/factions/logos/logo.png"
-      label="Логотип фракции"
-    />
-  );
-};
+## 📋 Требования
+
+- Node.js 18+
+- npm или yarn
+- Работающий backend сервер (порт 3000)
+
+## 🚀 Установка и запуск
+
+### 1. Клонирование и установка зависимостей
+
+```bash
+cd frontend
+npm install
 ```
 
-#### Пропсы:
+### 2. Настройка окружения
 
-- `uploadFunction` - функция загрузки из API slice
-- `uploadType` - тип загрузки ('faction-logo', 'faction-banner', 'period-image', 'period-banner', 'game-icon', 'game-banner', 'mission-deployment')
-- `onImageUploaded` - callback при успешной загрузке
-- `currentImageUrl` - текущий URL изображения
-- `label` - подпись для поля
-- `accept` - принимаемые форматы файлов
+Создайте файл `.env` в корне проекта:
 
-### ImageDisplay
-
-Компонент для отображения изображений с возможностью загрузки через модальное окно.
-
-#### Использование:
-
-```tsx
-import ImageDisplay from './components/ImageDisplay';
-import { useUploadFactionLogoMutation } from '../store/api/apiSlice';
-
-const MyComponent = () => {
-  const [uploadLogo] = useUploadFactionLogoMutation();
-  
-  return (
-    <ImageDisplay
-      imageUrl="/uploads/factions/logos/logo.png"
-      alt="Faction Logo"
-      showUploadButton={true}
-      uploadFunction={uploadLogo}
-      uploadLabel="Загрузить логотип"
-      onImageUploaded={(url) => console.log('New logo URL:', url)}
-    />
-  );
-};
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_APP_TITLE=BTapp
 ```
 
-#### Пропсы:
+### 3. Запуск приложения
 
-- `imageUrl` - URL изображения
-- `alt` - альтернативный текст
-- `className` - CSS класс
-- `style` - инлайн стили
-- `showUploadButton` - показывать ли кнопку загрузки
-- `uploadFunction` - функция загрузки
-- `uploadLabel` - подпись для кнопки загрузки
-- `onImageUploaded` - callback при загрузке
+```bash
+# Режим разработки
+npm run dev
 
-## Интеграция в формы
+# Сборка для продакшена
+npm run build
 
-### Форма фракции
-
-Форма фракции теперь включает компоненты для загрузки логотипа и баннера:
-
-```tsx
-// В FactionForm.tsx
-<Row>
-  <Col md={6}>
-    <UniversalImageUpload
-      uploadFunction={uploadLogo}
-      uploadType="faction-logo"
-      onImageUploaded={handleLogoUpload}
-      currentImageUrl={formData.logoUrl}
-      label="Логотип фракции"
-    />
-  </Col>
-  <Col md={6}>
-    <UniversalImageUpload
-      uploadFunction={uploadBanner}
-      uploadType="faction-banner"
-      onImageUploaded={handleBannerUpload}
-      currentImageUrl={formData.bannerUrl}
-      label="Баннер фракции"
-    />
-  </Col>
-</Row>
+# Предварительный просмотр сборки
+npm run preview
 ```
 
-### Форма игры
+Приложение будет доступно по адресу: `http://localhost:3001`
 
-Форма игры включает компоненты для загрузки иконки и баннера:
+## 🏗 Архитектура приложения
 
-```tsx
-// В GameForm.tsx
-<Row>
-  <Col md={6}>
-    <UniversalImageUpload
-      uploadFunction={uploadIcon}
-      uploadType="game-icon"
-      onImageUploaded={handleIconUpload}
-      currentImageUrl={formData.iconUrl}
-      label="Иконка игры"
-    />
-  </Col>
-  <Col md={6}>
-    <UniversalImageUpload
-      uploadFunction={uploadBanner}
-      uploadType="game-banner"
-      onImageUploaded={handleBannerUpload}
-      currentImageUrl={formData.bannerUrl}
-      label="Баннер игры"
-    />
-  </Col>
-</Row>
+### Структура проекта
+
+```
+src/
+├── components/           # Переиспользуемые компоненты
+│   ├── Layout.tsx       # Основной макет приложения
+│   ├── LoginForm.tsx    # Форма входа
+│   ├── RegisterForm.tsx # Форма регистрации
+│   ├── ProtectedRoute.tsx # Защищенные маршруты
+│   ├── UserNav.tsx      # Навигация пользователя
+│   ├── FactionCard.tsx  # Карточка фракции
+│   ├── MechIcon.tsx     # Иконка меха
+│   ├── FileUpload.tsx   # Загрузка файлов
+│   └── ...
+├── pages/               # Страницы приложения
+│   ├── HomePage.tsx     # Главная страница
+│   ├── BT_Page.tsx      # Страница BattleTech
+│   ├── TC_Page.tsx      # Страница Trench Crusade
+│   ├── MechListPage.tsx # Список мехов
+│   ├── FactionListPage.tsx # Список фракций
+│   ├── ImportPage.tsx   # Импорт данных
+│   ├── UserManagementPage.tsx # Управление пользователями
+│   └── ...
+├── store/               # Redux store
+│   ├── index.ts         # Конфигурация store
+│   ├── api/             # RTK Query API
+│   └── slices/          # Redux slices
+├── types/               # TypeScript типы
+├── config/              # Конфигурация
+├── hooks/               # Кастомные хуки
+└── assets/              # Статические ресурсы
 ```
 
-## Поддерживаемые форматы
+### Основные компоненты
 
-- PNG
-- JPG/JPEG
-- SVG
+#### Layout.tsx
+- Основной макет приложения
+- Навигационная панель
+- Система ролей и прав доступа
+- Адаптивный дизайн
 
-## Ограничения
+#### ProtectedRoute.tsx
+- Защита маршрутов по ролям
+- Редирект неавторизованных пользователей
+- Проверка прав доступа
 
-- Максимальный размер файла: 5MB
-- Требуется аутентификация для загрузки
-- Только для пользователей с ролью ADMIN
+#### FileUpload.tsx
+- Загрузка изображений и документов
+- Валидация файлов
+- Предварительный просмотр
+- Drag & Drop функциональность
 
-## API эндпоинты
+### Страницы приложения
 
-Все эндпоинты загрузки изображений доступны в `apiSlice.ts`:
+#### Главная страница (HomePage)
+- Выбор игровой системы (BattleTech/Trench Crusade)
+- Навигация по основным разделам
+- Информация о проекте
 
-- `useUploadFactionLogoMutation`
-- `useUploadFactionBannerMutation`
-- `useUploadPeriodImageMutation`
-- `useUploadPeriodBannerMutation`
-- `useUploadGameIconMutation`
-- `useUploadGameBannerMutation`
-- `useUploadMissionImageMutation`
+#### Управление контентом
+- **MechListPage** - каталог мехов с фильтрацией
+- **FactionListPage** - список фракций с детальной информацией
+- **PeriodListPage** - временные периоды
+- **MissionListPage** - каталог миссий
+- **AvailabilityPage** - таблица доступности техники
 
-# React + TypeScript + Vite
+#### Административные функции
+- **ImportPage** - импорт данных из CSV
+- **UserManagementPage** - управление пользователями
+- **FactionManagementPage** - управление фракциями
+- **GameManagementPage** - управление играми
+- **RawMechValidationPage** - валидация данных мехов
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🔐 Система аутентификации
 
-Currently, two official plugins are available:
+### Роли пользователей
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **ADMIN** - полный доступ ко всем функциям
+- **MODERATOR** - управление контентом
+- **STRATEGIST** - управление кампаниями
+- **PLAYER** - базовый доступ к просмотру
 
-## Expanding the ESLint configuration
+### Защищенные маршруты
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```typescript
+// Пример защищенного маршрута
+<Route path="/admin" element={
+  <ProtectedRoute requiredRoles={['ADMIN']}>
+    <AdminPage />
+  </ProtectedRoute>
+} />
+```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
+## 📊 Управление состоянием
+
+### Redux Store
+
+```typescript
+// Основные slices
+- auth: управление аутентификацией
+- users: управление пользователями
+- mechs: каталог мехов
+- factions: фракции
+- periods: временные периоды
+- missions: миссии
+- availabilities: доступность техники
+```
+
+### RTK Query
+
+- Автоматическое кэширование
+- Оптимистичные обновления
+- Автоматическая синхронизация
+- Обработка ошибок
+
+## 🎨 UI/UX Особенности
+
+### Дизайн система
+
+- **Bootstrap 5** - основа дизайна
+- **Адаптивная верстка** - поддержка мобильных устройств
+- **Темная тема** - навигационная панель
+- **Карточный интерфейс** - для отображения данных
+- **Модальные окна** - для форм и детальной информации
+
+### Компоненты
+
+#### NavButton_Type1
+- Кастомные кнопки навигации
+- Поддержка иконок
+- Анимации и эффекты
+
+#### FactionCard
+- Карточки фракций с логотипами
+- Информация о культуре
+- Быстрые действия
+
+#### MechIcon
+- Визуализация мехов
+- Различные размеры
+- Поддержка fallback изображений
+
+## 📁 Загрузка файлов
+
+### Поддерживаемые типы
+
+- **Изображения**: PNG, JPG, JPEG, GIF, WebP
+- **Документы**: PDF, CSV, TXT
+- **Максимальный размер**: 10MB
+
+### Компоненты загрузки
+
+- **UniversalImageUpload** - универсальная загрузка изображений
+- **FileUpload** - загрузка любых файлов
+- **ImageDisplay** - отображение изображений
+
+## 🔧 Разработка
+
+### Скрипты
+
+```bash
+# Запуск в режиме разработки
+npm run dev
+
+# Сборка проекта
+npm run build
+
+# Проверка типов TypeScript
+npm run typecheck
+
+# Линтинг
+npm run lint
+npm run lint:fix
+
+# Форматирование кода
+npm run format
+npm run format:check
+
+# Тестирование
+npm run test
+npm run test:watch
+npm run test:coverage
+
+# Предварительный просмотр
+npm run preview
+```
+
+### Конфигурация Vite
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3001,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
-})
+});
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🌐 Интеграция с API
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Конфигурация API
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```typescript
+// config/api.ts
+export const API_BASE_URL = 'http://localhost:3000';
+
+export const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http')) return imagePath;
+  
+  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+  return `${API_BASE_URL}/${cleanPath}`;
+};
 ```
+
+### RTK Query Endpoints
+
+- Автоматическая генерация хуков
+- Кэширование запросов
+- Оптимистичные обновления
+- Обработка ошибок
+
+## 📱 Адаптивность
+
+### Breakpoints
+
+- **xs**: < 576px (мобильные)
+- **sm**: ≥ 576px (планшеты)
+- **md**: ≥ 768px (малые десктопы)
+- **lg**: ≥ 992px (средние десктопы)
+- **xl**: ≥ 1200px (большие десктопы)
+
+### Мобильная оптимизация
+
+- Адаптивная навигация
+- Touch-friendly интерфейс
+- Оптимизированные формы
+- Responsive таблицы
+
+## 🧪 Тестирование
+
+### Виды тестов
+
+- **Unit тесты** - тестирование компонентов
+- **Integration тесты** - тестирование взаимодействий
+- **E2E тесты** - тестирование пользовательских сценариев
+
+### Покрытие кода
+
+```bash
+npm run test:coverage
+```
+
+## 📦 Сборка и деплой
+
+### Продакшн сборка
+
+```bash
+npm run build
+```
+
+### Оптимизации
+
+- **Code splitting** - разделение кода по маршрутам
+- **Tree shaking** - удаление неиспользуемого кода
+- **Minification** - минификация CSS и JS
+- **Image optimization** - оптимизация изображений
+
+### Статические файлы
+
+- Автоматическая обработка изображений
+- Поддержка SVG иконок
+- Оптимизация шрифтов
+
+## 🔍 Отладка
+
+### Инструменты разработчика
+
+- **React DevTools** - отладка компонентов
+- **Redux DevTools** - отладка состояния
+- **Network tab** - мониторинг API запросов
+- **Console** - логирование
+
+### Логирование
+
+```typescript
+// Примеры логирования
+console.log('API Response:', data);
+console.error('API Error:', error);
+```
+
+## 🤝 Вклад в проект
+
+### Стиль кода
+
+- **TypeScript** - строгая типизация
+- **ESLint** - проверка качества кода
+- **Prettier** - форматирование
+- **Conventional Commits** - стандарт коммитов
+
+### Процесс разработки
+
+1. Создание feature ветки
+2. Разработка функциональности
+3. Написание тестов
+4. Code review
+5. Merge в main
+
+## 📄 Лицензия
+
+Проект использует лицензию UNLICENSED.
+
+## 🆘 Поддержка
+
+### Частые проблемы
+
+1. **CORS ошибки** - проверьте настройки backend
+2. **API недоступен** - убедитесь, что backend запущен
+3. **Проблемы с аутентификацией** - проверьте JWT токен
+
+### Получение помощи
+
+1. Проверьте логи в консоли браузера
+2. Убедитесь в корректности API запросов
+3. Проверьте настройки окружения
+4. Создайте issue в репозитории
+
+## 🔄 Обновления
+
+### Обновление зависимостей
+
+```bash
+npm update
+npm audit fix
+```
+
+### Миграции
+
+При обновлении основных зависимостей:
+1. Проверьте breaking changes
+2. Обновите типы TypeScript
+3. Исправьте deprecated API
+4. Запустите тесты
+
+## 📚 Дополнительные ресурсы
+
+- [React Documentation](https://react.dev/)
+- [Redux Toolkit Documentation](https://redux-toolkit.js.org/)
+- [React Bootstrap Documentation](https://react-bootstrap.github.io/)
+- [Vite Documentation](https://vitejs.dev/)
+- [TypeScript Documentation](https://www.typescriptlang.org/)

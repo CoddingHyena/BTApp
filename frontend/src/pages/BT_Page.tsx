@@ -39,6 +39,10 @@ const BT_Page: React.FC = () => {
                 <NavButton_Type1 to="/periods" variant="outline-primary">
                   Периоды
                 </NavButton_Type1>
+                
+                <NavButton_Type1 to="/campaigns" variant="outline-danger">
+                  Управление кампаниями
+                </NavButton_Type1>
               </div>
             </Card.Body>
           </Card>
