@@ -103,7 +103,7 @@ model Faction {
   game               Game?              @relation(fields: [gameIdRef], references: [id])
   parentFaction      Faction?           @relation("FactionHierarchy", fields: [parentFactionId], references: [id])
   childFactions      Faction[]          @relation("FactionHierarchy")
-  formations         Formation[]
+  formations         CombatFormation[]
   mechAvailabilities MechAvailability[]
   campaignFactions   CampaignFaction[]
 
@@ -268,7 +268,7 @@ model Campaign {
   game                 Game               @relation(fields: [gameId], references: [id])
   parentCampaign       Campaign?          @relation("CampaignHierarchy", fields: [parentCampaignId], references: [id])
   childCampaigns       Campaign[]         @relation("CampaignHierarchy")
-  formations           Formation[]
+  formations           CombatFormation[]
   notifications        Notification[]
   campaignFactions     CampaignFaction[]
 
@@ -289,31 +289,31 @@ model CampaignFaction {
   @@map("campaign_factions")
 }
 
-model Formation {
+model CombatFormation {
   id                 String            @id @default(uuid())
   campaignId         String
   factionId          Int
   name               String
-  type               FormationType
+  type               CombatFormationType
   parentFormationId  String?
   isCommandLance     Boolean           @default(false)
   isCommanderCompany Boolean           @default(false)
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   curentPositionId   String?
-  battleFormations   BattleFormation[]
-  members            FormationMember[]
+  battleFormations   InBattle_CombatFormation[]
+  members            CombatFormationMember[]
   campaign           Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   curentPosition     MapNode?          @relation(fields: [curentPositionId], references: [id])
   faction            Faction           @relation(fields: [factionId], references: [id])
-  parentFormation    Formation?        @relation("FormationHierarchy", fields: [parentFormationId], references: [id])
-  childFormations    Formation[]       @relation("FormationHierarchy")
+  parentFormation    CombatFormation?  @relation("CombatFormationHierarchy", fields: [parentFormationId], references: [id])
+  childFormations    CombatFormation[] @relation("CombatFormationHierarchy")
   movementOrders     MovementOrder[]
 
-  @@map("formations")
+  @@map("combat_formations")
 }
 
-model FormationMember {
+model CombatFormationMember {
   id             String         @id @default(uuid())
   formationId    String
   campaignUnitId String
@@ -322,11 +322,11 @@ model FormationMember {
   leftAt         DateTime?
   pilotId        String?
   campaignUnit   CampaignUnit   @relation(fields: [campaignUnitId], references: [id], onDelete: Cascade)
-  formation      Formation      @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  formation      CombatFormation @relation(fields: [formationId], references: [id], onDelete: Cascade)
   pilot          CampaignPilot? @relation(fields: [pilotId], references: [id])
 
   @@unique([formationId, campaignUnitId])
-  @@map("formation_members")
+  @@map("combat_formation_members")
 }
 
 model MapTemplate {
@@ -353,7 +353,7 @@ model MapNode {
   label      String?
   type       String?
   battles    Battle[]
-  formations Formation[]
+  formations CombatFormation[]
   edgesFrom  MapEdge[]   @relation("EdgeFrom")
   edgesTo    MapEdge[]   @relation("EdgeTo")
   template   MapTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
@@ -400,7 +400,7 @@ model MovementOrder {
   completedAt      DateTime?
   canceledAt       DateTime?
   orderType        MovementOrderType @default(NORMAL)
-  formation        Formation         @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  formation        CombatFormation   @relation(fields: [formationId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
   @@index([formationId])
@@ -418,7 +418,7 @@ model Battle {
   createdAt  DateTime          @default(now())
   startedAt  DateTime?
   resolvedAt DateTime?
-  formations BattleFormation[]
+  formations InBattle_CombatFormation[]
   reports    BattleReport[]
   sides      BattleSide[]
   campaign   Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
@@ -438,7 +438,7 @@ model BattleSide {
   outcome       BattleResult?
   victoryPoints Int               @default(0)
   summary       Json              @default("{}")
-  formations    BattleFormation[]
+  formations    InBattle_CombatFormation[]
   battle        Battle            @relation(fields: [battleId], references: [id], onDelete: Cascade)
   faction       Faction           @relation(fields: [factionId], references: [id])
 
@@ -446,7 +446,7 @@ model BattleSide {
   @@map("battle_sides")
 }
 
-model BattleFormation {
+model InBattle_CombatFormation {
   id                String             @id @default(uuid())
   battleId          String
   sideId            String
@@ -459,13 +459,13 @@ model BattleFormation {
   retreatAllowed    Boolean            @default(false)
   retreated         Boolean            @default(false)
   battle            Battle             @relation(fields: [battleId], references: [id], onDelete: Cascade)
-  formation         Formation          @relation(fields: [formationId], references: [id])
+  formation         CombatFormation    @relation(fields: [formationId], references: [id])
   side              BattleSide         @relation(fields: [sideId], references: [id], onDelete: Cascade)
 
   @@index([battleId])
   @@index([sideId])
   @@index([formationId])
-  @@map("battle_formations")
+  @@map("in_battle_combat_formations")
 }
 
 model CampaignPlayer {
@@ -598,7 +598,7 @@ model CampaignUnit {
   campaign         Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   faction          Faction           @relation(fields: [factionId], references: [id])
   pilot            CampaignPilot?    @relation(fields: [pilotId], references: [id])
-  formationMembers FormationMember[]
+  formationMembers CombatFormationMember[]
 
   @@map("campaign_units")
 }
@@ -606,7 +606,7 @@ model CampaignUnit {
 model CampaignPilot {
   id               String              @id @default(uuid())
   campaignId       String
-  rank             FormationMemberRole @default(MEMBER)
+  rank             CombatFormationMemberRole @default(MEMBER)
   gunnery          Int
   piloting         Int
   alphaStrikeSkill Int
@@ -628,7 +628,7 @@ model CampaignPilot {
   campaign         Campaign            @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   faction          Faction             @relation(fields: [factionId], references: [id])
   units            CampaignUnit[]
-  formationMembers FormationMember[]
+  formationMembers CombatFormationMember[]
 
   @@map("campaign_pilots")
 }
@@ -756,13 +756,13 @@ enum MovementType {
   TELEPORT
 }
 
-enum FormationType {
+enum CombatFormationType {
   LANCE
   COMPANY
   DIVISION
 }
 
-enum FormationMemberRole {
+enum CombatFormationMemberRole {
   MEMBER
   LANCE_LEADER
   COMPANY_LEADER

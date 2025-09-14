@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { FormationType } from '@prisma/client';
+import { CombatFormationType } from '@prisma/client';
 
 export class CreateFormationDto {
   @ApiProperty()
@@ -15,9 +15,9 @@ export class CreateFormationDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ enum: FormationType })
-  @IsEnum(FormationType)
-  type: FormationType;
+  @ApiProperty({ enum: CombatFormationType })
+  @IsEnum(CombatFormationType)
+  type: CombatFormationType;
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -11,7 +11,7 @@ import type {
   NameValidationRequest, 
   GenderFromNameRequest,
   AssignStrategistRequest,
-  Formation 
+  CombatFormation 
 } from '@/types';
 
 // Создаем единый экземпляр axios для всех API запросов
@@ -136,11 +136,11 @@ export const pilots = {
 
 // API методы для формаций
 export const formations = {
-  getAll: () => apiClient.get<Formation[]>('/formations'),
-  getById: (id: string) => apiClient.get<Formation>(`/formations/${id}`),
-  getByCampaign: (campaignId: string) => apiClient.get<Formation[]>(`/formations?campaignId=${campaignId}`),
-  create: (data: Partial<Formation>) => apiClient.post<Formation>('/formations', data),
-  update: (id: string, data: Partial<Formation>) => apiClient.put<Formation>(`/formations/${id}`, data),
+  getAll: () => apiClient.get<CombatFormation[]>('/formations'),
+  getById: (id: string) => apiClient.get<CombatFormation>(`/formations/${id}`),
+  getByCampaign: (campaignId: string) => apiClient.get<CombatFormation[]>(`/formations?campaignId=${campaignId}`),
+  create: (data: Partial<CombatFormation>) => apiClient.post<CombatFormation>('/formations', data),
+  update: (id: string, data: Partial<CombatFormation>) => apiClient.put<CombatFormation>(`/formations/${id}`, data),
   delete: (id: string) => apiClient.delete(`/formations/${id}`),
 };
 

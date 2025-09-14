@@ -48,7 +48,7 @@ const FormationModal: React.FC<FormationModalProps> = ({
     }
   };
 
-  const formationTypes = [
+  const unitTypes = [
     { value: 'LANCE', label: 'Лэнс (4 юнита)' },
     { value: 'COMPANY', label: 'Рота (12 юнитов)' },
     { value: 'DIVISION', label: 'Дивизия (40 юнитов)' }
@@ -204,11 +204,11 @@ const FormationModal: React.FC<FormationModalProps> = ({
                       disabled={isLoading}
                     >
                       <option value="">Выберите тип формации</option>
-                      {formationTypes.map(type => (
-                        <option key={type.value} value={type.value}>
-                          {type.label}
-                        </option>
-                      ))}
+                                      {unitTypes.map(type => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
                     </select>
                   </div>
                 </div>

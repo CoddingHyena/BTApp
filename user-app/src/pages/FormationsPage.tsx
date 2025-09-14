@@ -7,12 +7,12 @@ import { api } from '@/services/api';
 import Button from '@/components/Button';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import FormationModal from '@/components/FormationModal';
-import type { Formation } from '@/types';
+import type { CombatFormation } from '@/types';
 
 const FormationsPage: React.FC = () => {
   const { campaignId } = useParams<{ campaignId: string }>();
   const [showFormationModal, setShowFormationModal] = useState(false);
-  const [formations, setFormations] = useState<Formation[]>([]);
+  const [formations, setFormations] = useState<CombatFormation[]>([]);
   const [isLoadingFormations, setIsLoadingFormations] = useState(false);
   
   const dispatch = useAppDispatch();

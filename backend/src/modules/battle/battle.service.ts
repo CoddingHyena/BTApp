@@ -40,18 +40,18 @@ export class BattleService {
     if (!battle) throw new NotFoundException('Бой не найден');
     const side = await this.prisma.battleSide.findUnique({ where: { id: sideId } });
     if (!side || side.battleId !== battleId) throw new BadRequestException('Сторона боя не найдена или не принадлежит бою');
-    const formation = await this.prisma.formation.findUnique({ where: { id: formationId } });
+    const formation = await this.prisma.combatFormation.findUnique({ where: { id: formationId } });
     if (!formation) throw new NotFoundException('Формация не найдена');
     // Доп. проверка: фракция формации совпадает со стороной
     if (formation.factionId !== side.factionId) throw new BadRequestException('Формация принадлежит другой фракции');
-    return this.prisma.battleFormation.create({ data: { battleId, sideId, formationId } });
+    return this.prisma.inBattle_CombatFormation.create({ data: { battleId, sideId, formationId } });
   }
 
   async setCommittedUnits(battleFormationId: string, campaignUnitIds: string[]) {
-    const bf = await this.prisma.battleFormation.findUnique({ where: { id: battleFormationId }, include: { formation: true } });
+    const bf = await this.prisma.inBattle_CombatFormation.findUnique({ where: { id: battleFormationId }, include: { formation: true } });
     if (!bf) throw new NotFoundException('Запись формирования в бою не найдена');
     // Можно добавить валидацию: все юниты принадлежат formation
-    return this.prisma.battleFormation.update({ where: { id: battleFormationId }, data: { committedUnits: campaignUnitIds } as any });
+    return this.prisma.inBattle_CombatFormation.update({ where: { id: battleFormationId }, data: { committedUnits: campaignUnitIds } as any });
   }
 
   async setStatus(battleId: string, status: BattleStatus) {

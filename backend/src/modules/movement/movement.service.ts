@@ -7,11 +7,11 @@ export class MovementService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createOrder(formationId: string, pathNodeIds: string[], orderType: MovementOrderType = 'NORMAL' as MovementOrderType) {
-    const formation = await this.prisma.formation.findUnique({ where: { id: formationId }, include: { campaign: { include: { campaignMap: { include: { template: { include: { nodes: true, edges: true } } } } } } } });
+    const formation = await this.prisma.combatFormation.findUnique({ where: { id: formationId }, include: { campaign: { include: { campaignMap: { include: { template: { include: { nodes: true, edges: true } } } } } } } });
     if (!formation) throw new NotFoundException('Формация не найдена');
     if (!formation.campaign.campaignMap) throw new BadRequestException('К кампании не привязана карта');
     // Блокировка движения, если формация в бою (кроме отступления)
-    const activeBattle = await this.prisma.battleFormation.findFirst({ where: { formationId, battle: { status: { in: ['SCHEDULED', 'ACTIVE'] } } } as any });
+    const activeBattle = await this.prisma.inBattle_CombatFormation.findFirst({ where: { formationId, battle: { status: { in: ['SCHEDULED', 'ACTIVE'] } } } as any });
     if (activeBattle && orderType !== 'RETREAT') throw new BadRequestException('Формация в бою: разрешён только приказ отступления');
     // Активный ордер?
     const active = await this.prisma.movementOrder.findFirst({ where: { formationId, status: { in: ['QUEUED', 'IN_PROGRESS'] } } as any });
@@ -78,7 +78,7 @@ export class MovementService {
       // завершение ребра
       const fromIndex = order.currentEdgeIndex;
       const nextNode = (order.pathNodeIds as any)[fromIndex + 1];
-      await this.prisma.formation.update({ where: { id: order.formationId }, data: { curentPositionId: nextNode } });
+      await this.prisma.combatFormation.update({ where: { id: order.formationId }, data: { curentPositionId: nextNode } });
       const stillHas = fromIndex + 2 < (order.pathNodeIds as any).length;
       if (stillHas) {
         const nextFrom = (order.pathNodeIds as any)[fromIndex + 1];
