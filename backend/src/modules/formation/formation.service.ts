@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFormationDto } from './dto/create-formation.dto';
 import { UpdateFormationDto } from './dto/update-formation.dto';
-import { FormationMemberRole, FormationType } from '@prisma/client';
+import { CombatFormationMemberRole, CombatFormationType } from '@prisma/client';
 import { AddMemberDto } from './dto/add-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 
@@ -15,39 +15,39 @@ export class FormationService {
     if (dto.parentFormationId) {
       await this.ensureParentWithDto(dto.parentFormationId, dto.type, dto.isCommandLance ?? false, dto.isCommanderCompany ?? false);
     }
-    return this.prisma.formation.create({ data: dto, include: { members: true, childFormations: true, parentFormation: true } });
+    return this.prisma.combatFormation.create({ data: dto, include: { members: true, childFormations: true, parentFormation: true } });
   }
 
   async findAll(filters: { campaignId?: string; factionId?: number }) {
     const where: any = {};
     if (filters.campaignId) where.campaignId = filters.campaignId;
     if (typeof filters.factionId === 'number') where.factionId = filters.factionId;
-    return this.prisma.formation.findMany({ where, include: { members: true, childFormations: true } });
+    return this.prisma.combatFormation.findMany({ where, include: { members: true, childFormations: true } });
   }
 
   async findOne(id: string) {
-    const f = await this.prisma.formation.findUnique({ where: { id }, include: { members: true, childFormations: true } });
+    const f = await this.prisma.combatFormation.findUnique({ where: { id }, include: { members: true, childFormations: true } });
     if (!f) throw new NotFoundException('Формация не найдена');
     return f;
   }
 
   async update(id: string, dto: UpdateFormationDto) {
-    const exists = await this.prisma.formation.findUnique({ where: { id } });
+    const exists = await this.prisma.combatFormation.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Формация не найдена');
     if (dto.parentFormationId) await this.ensureParentWithDto(dto.parentFormationId, dto.type ?? exists.type, dto.isCommandLance ?? exists.isCommandLance, dto.isCommanderCompany ?? exists.isCommanderCompany);
     await this.validateFlagConsistency(id, exists, dto);
-    return this.prisma.formation.update({ where: { id }, data: dto, include: { members: true, childFormations: true, parentFormation: true } });
+    return this.prisma.combatFormation.update({ where: { id }, data: dto, include: { members: true, childFormations: true, parentFormation: true } });
   }
 
   async remove(id: string) {
-    const exists = await this.prisma.formation.findUnique({ where: { id } });
+    const exists = await this.prisma.combatFormation.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException('Формация не найдена');
-    return this.prisma.formation.delete({ where: { id } });
+    return this.prisma.combatFormation.delete({ where: { id } });
   }
 
   // Управление составом
   async addMember(formationId: string, dto: AddMemberDto) {
-    const formation = await this.prisma.formation.findUnique({ where: { id: formationId }, include: { members: true, parentFormation: true, childFormations: true } });
+    const formation = await this.prisma.combatFormation.findUnique({ where: { id: formationId }, include: { members: true, parentFormation: true, childFormations: true } });
     if (!formation) throw new NotFoundException('Формация не найдена');
 
     const unit = await this.prisma.campaignUnit.findUnique({ 
@@ -57,13 +57,13 @@ export class FormationService {
     if (!unit) throw new NotFoundException('Юнит не найден');
     if (!unit.pilot) throw new NotFoundException('Юнит должен иметь назначенного пилота');
 
-    const existing = await this.prisma.formationMember.findFirst({ where: { campaignUnitId: dto.campaignUnitId } });
+    const existing = await this.prisma.combatFormationMember.findFirst({ where: { campaignUnitId: dto.campaignUnitId } });
     if (existing) throw new BadRequestException('Юнит уже состоит в другой формации');
 
     // Бизнес-правила составов
     await this.validateMembershipRulesOnAdd(formation.id, formation.type, unit.pilot.rank);
 
-    return this.prisma.formationMember.create({
+    return this.prisma.combatFormationMember.create({
       data: {
         formationId,
         campaignUnitId: dto.campaignUnitId,
@@ -74,13 +74,13 @@ export class FormationService {
   }
 
   async removeMember(formationId: string, memberId: string) {
-    const member = await this.prisma.formationMember.findUnique({ where: { id: memberId } });
+    const member = await this.prisma.combatFormationMember.findUnique({ where: { id: memberId } });
     if (!member || member.formationId !== formationId) throw new NotFoundException('Участник не найден в указанной формации');
-    return this.prisma.formationMember.delete({ where: { id: memberId } });
+    return this.prisma.combatFormationMember.delete({ where: { id: memberId } });
   }
 
   async updateMemberRole(formationId: string, memberId: string, dto: UpdateMemberRoleDto) {
-    const member = await this.prisma.formationMember.findUnique({ 
+    const member = await this.prisma.combatFormationMember.findUnique({ 
       where: { id: memberId },
       include: { pilot: true }
     });
@@ -94,21 +94,21 @@ export class FormationService {
     await this.validateMembershipRulesOnRoleChange(formationId, pilot.rank);
     
     // Обновляем связь с пилотом
-    return this.prisma.formationMember.update({ 
+    return this.prisma.combatFormationMember.update({ 
       where: { id: memberId }, 
       data: { pilotId: dto.pilotId } 
     });
   }
 
-  private async validateMembershipRulesOnAdd(formationId: string, type: FormationType, newRole: FormationMemberRole) {
-    const members = await this.prisma.formationMember.findMany({ 
+  private async validateMembershipRulesOnAdd(formationId: string, type: CombatFormationType, newRole: CombatFormationMemberRole) {
+    const members = await this.prisma.combatFormationMember.findMany({ 
       where: { formationId },
       include: { pilot: true }
     });
     if (type === 'LANCE') {
       if (members.length >= 4) throw new BadRequestException('Лэнс уже укомплектован (4)');
       // Командный лэнс — отдельная логика на роли, но флаг берём с Formation
-      const formation = await this.prisma.formation.findUnique({ where: { id: formationId } });
+      const formation = await this.prisma.combatFormation.findUnique({ where: { id: formationId } });
       if (formation?.isCommandLance) {
         // 3 Bodyguards + 1 Division Commander
         const bodyguards = members.filter(m => m.pilot?.rank === 'BODYGUARD').length + (newRole === 'BODYGUARD' ? 1 : 0);
@@ -132,10 +132,10 @@ export class FormationService {
     }
   }
 
-  private async validateMembershipRulesOnRoleChange(formationId: string, role: FormationMemberRole) {
-    const formation = await this.prisma.formation.findUnique({ where: { id: formationId } });
+  private async validateMembershipRulesOnRoleChange(formationId: string, role: CombatFormationMemberRole) {
+    const formation = await this.prisma.combatFormation.findUnique({ where: { id: formationId } });
     if (!formation) throw new NotFoundException('Формация не найдена');
-    const members = await this.prisma.formationMember.findMany({ 
+    const members = await this.prisma.combatFormationMember.findMany({ 
       where: { formationId },
       include: { pilot: true }
     });
@@ -165,8 +165,8 @@ export class FormationService {
     if (!faction) throw new BadRequestException('Фракция не найдена');
   }
 
-  private async ensureParentWithDto(parentFormationId: string, childType: FormationType, isCommandLance: boolean, isCommanderCompany: boolean) {
-    const parent = await this.prisma.formation.findUnique({ where: { id: parentFormationId }, include: { childFormations: true } });
+  private async ensureParentWithDto(parentFormationId: string, childType: CombatFormationType, isCommandLance: boolean, isCommanderCompany: boolean) {
+    const parent = await this.prisma.combatFormation.findUnique({ where: { id: parentFormationId }, include: { childFormations: true } });
     if (!parent) throw new BadRequestException('Родительская формация не найдена');
     // Простые правила иерархии: LANCE -> parent COMPANY; COMPANY -> parent DIVISION
     if (childType === 'LANCE' && parent.type !== 'COMPANY') throw new BadRequestException('Лэнс может принадлежать только роте');
@@ -195,7 +195,7 @@ export class FormationService {
 
   private async validateFlagConsistency(id: string, exists: any, dto: UpdateFormationDto) {
     // Проверяем флаги на согласованность с родителем
-    const formation = await this.prisma.formation.findUnique({ where: { id }, include: { parentFormation: true } });
+    const formation = await this.prisma.combatFormation.findUnique({ where: { id }, include: { parentFormation: true } });
     const parent = formation?.parentFormation;
     const type = dto.type ?? exists.type;
     const isCmdLance = dto.isCommandLance ?? exists.isCommandLance;
@@ -209,14 +209,14 @@ export class FormationService {
       if (!parent || parent.type !== 'DIVISION') {
         throw new BadRequestException('Командирская рота возможна только внутри дивизии');
       }
-      const siblings = await this.prisma.formation.findMany({ where: { parentFormationId: parent.id, NOT: { id } } });
+      const siblings = await this.prisma.combatFormation.findMany({ where: { parentFormationId: parent.id, NOT: { id } } });
       if (siblings.some((s) => s.isCommanderCompany)) throw new BadRequestException('В дивизии уже есть командирская рота');
     }
   }
 
   async validateFormation(id: string) {
     const errors: string[] = [];
-    const formation = await this.prisma.formation.findUnique({ 
+    const formation = await this.prisma.combatFormation.findUnique({ 
       where: { id }, 
       include: { 
         members: { include: { pilot: true } }, 

@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsInt, IsEnum, Min, Max } from 'class-validator';
-import { FormationMemberRole, PilotSpecialization, PilotStatus, Gender } from '@prisma/client';
+import { CombatFormationMemberRole, PilotSpecialization, PilotStatus, Gender } from '@prisma/client';
 
 export class CreateCampaignPilotDto {
   @IsString()
@@ -22,8 +22,8 @@ export class CreateCampaignPilotDto {
   gender?: Gender; // Пол пилота
 
   @IsOptional()
-  @IsEnum(FormationMemberRole)
-  rank?: FormationMemberRole;
+  @IsEnum(CombatFormationMemberRole)
+  rank?: CombatFormationMemberRole;
 
   @IsInt()
   @Min(3)

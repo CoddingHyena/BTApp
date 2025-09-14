@@ -111,7 +111,7 @@ src/
 │   ├── mech-availability/ # Доступность техники
 │   ├── mission/           # Система миссий
 │   ├── period/            # Временные периоды
-│   ├── formation/         # Формирования
+│   ├── formation/         # Боевые формирования (CombatFormation)
 │   ├── map/               # Карты и локации
 │   ├── movement/          # Система передвижения
 │   ├── user/              # Управление пользователями
@@ -148,6 +148,12 @@ src/
 - Автоматическая генерация с учетом культуры фракции
 - Система позывных и имен
 - Гендерная система
+
+#### Боевые формирования (CombatFormation)
+- Типы: LANCE (4 юнита), COMPANY (12 юнитов), DIVISION (40 юнитов)
+- Иерархическая структура: Лэнс → Рота → Дивизия
+- Система ролей: LANCE_LEADER, COMPANY_LEADER, DIVISION_COMMANDER, BODYGUARD
+- Управление составом и валидация правил формирования
 
 ## 🔐 Аутентификация
 
@@ -205,6 +211,16 @@ Authorization: Bearer <your-jwt-token>
 - `GET /campaign-pilots` - список пилотов
 - `PATCH /campaign-pilots/:id` - обновление пилота
 
+### Боевые формирования
+- `GET /formations` - список формирований
+- `POST /formations` - создание формирования
+- `GET /formations/:id` - получение формирования
+- `PATCH /formations/:id` - обновление формирования
+- `DELETE /formations/:id` - удаление формирования
+- `POST /formations/:id/members` - добавление участника
+- `DELETE /formations/:id/members/:memberId` - удаление участника
+- `PATCH /formations/:id/members/:memberId/role` - изменение роли участника
+
 ## 🗄 База данных
 
 ### Основные таблицы
@@ -216,6 +232,9 @@ Authorization: Bearer <your-jwt-token>
 - `campaign_players` - игроки кампаний
 - `missions` - миссии
 - `periods` - временные периоды
+- `combat_formations` - боевые формирования
+- `combat_formation_members` - участники формирований
+- `in_battle_combat_formations` - формирования в бою
 
 ### Миграции
 ```bash

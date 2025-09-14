@@ -192,10 +192,10 @@ export interface Notification {
   };
 }
 
-export interface Formation {
+export interface CombatFormation {
   id: string;
   name: string;
-  type: 'LANCE' | 'LINEAR_COMPANY' | 'COMMAND_COMPANY' | 'DIVISION';
+  type: 'LANCE' | 'COMPANY' | 'DIVISION';
   campaignId: string;
   factionId: number;
   description?: string;
