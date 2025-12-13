@@ -144,6 +144,12 @@ export const formations = {
   delete: (id: string) => apiClient.delete(`/formations/${id}`),
 };
 
+// API методы для миссий
+export const missions = {
+  generate: (data?: { type?: string; difficulty?: string; minObjectives?: number; maxObjectives?: number }) => 
+    apiClient.post<any>('/missions/generate', data || {}),
+};
+
 // API методы для аутентификации
 export const auth = {
   login: (credentials: { email: string; password: string }) => 
@@ -168,6 +174,7 @@ export const api = {
   notifications,
   pilots,
   formations,
+  missions,
   auth,
   users,
 };

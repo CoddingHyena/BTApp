@@ -6,6 +6,8 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import MainPage from './pages/MainPage';
+import MissionsPage from './pages/MissionsPage';
 import CampaignsPage from './pages/CampaignsPage';
 import CreateCampaignPage from './pages/CreateCampaignPage';
 import CampaignPage from './pages/CampaignPage';
@@ -29,7 +31,8 @@ function App() {
                 <Layout />
               </ProtectedRoute>
             }>
-              <Route index element={<Navigate to="/campaigns" replace />} />
+              <Route index element={<MainPage />} />
+              <Route path="missions" element={<MissionsPage />} />
               <Route path="campaigns" element={<CampaignsPage />} />
               <Route path="campaigns/new" element={<CreateCampaignPage />} />
               <Route path="campaigns/:id" element={<CampaignPage />} />

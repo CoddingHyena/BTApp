@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     // Если пользователь уже авторизован, перенаправляем на главную страницу
     if (isInitialized && user && token) {
-      navigate('/campaigns');
+      navigate('/');
     }
   }, [isInitialized, user, token, navigate]);
 
@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     const result = await dispatch(login(credentials));
     if (login.fulfilled.match(result)) {
-      navigate('/campaigns');
+      navigate('/');
     }
   };
 
