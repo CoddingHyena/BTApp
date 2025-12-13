@@ -37,6 +37,12 @@ const Navigation: React.FC = () => {
         {user ? (
           <div className="navbar-nav ms-auto d-flex align-items-center">
             <Link 
+              to="/missions" 
+              className={`nav-link ${isActive('/missions') ? 'active' : ''}`}
+            >
+              Миссии
+            </Link>
+            <Link 
               to="/campaigns" 
               className={`nav-link ${isActive('/campaigns') ? 'active' : ''}`}
             >

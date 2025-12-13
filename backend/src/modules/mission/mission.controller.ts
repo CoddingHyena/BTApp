@@ -1,7 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { MissionService } from './mission.service';
+import { MissionGeneratorService } from './mission-generator.service';
 import { CreateMissionDto } from './dto/create-mission.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
+import { GenerateMissionDto } from './dto/generate-mission.dto';
+import { GeneratedMissionDto } from './dto/generated-mission.dto';
 import { Mission, MissionDifficulty } from '@prisma/client';
 import { AuthGuard } from '../../auth/auth.guard';
 import { RolesGuard } from '../../auth/roles.guard';
@@ -9,7 +12,10 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 
 @Controller('missions')
 export class MissionController {
-  constructor(private readonly missionService: MissionService) {}
+  constructor(
+    private readonly missionService: MissionService,
+    private readonly missionGeneratorService: MissionGeneratorService,
+  ) {}
 
   @Get()
   async findAll(
@@ -31,6 +37,11 @@ export class MissionController {
   @Get('code/:code')
   async findByCode(@Param('code') code: string): Promise<Mission> {
     return this.missionService.findByCode(code);
+  }
+
+  @Post('generate')
+  async generate(@Body() generateMissionDto: GenerateMissionDto): Promise<GeneratedMissionDto> {
+    return this.missionGeneratorService.generate(generateMissionDto);
   }
 
   @Post()
